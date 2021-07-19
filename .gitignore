@@ -1,0 +1,20 @@
+*/build/
+secrets.properties
+*.iml
+.gradle
+/local.properties
+
+# Android Studio
+.idea/*
+!.idea/codeStyles/Project.xml
+!.idea/codeStyles/codeStyleConfig.xml
+*.iml
+*.ipr
+*.iws
+
+
+.DS_Store
+/captures
+.externalNativeBuild
+.cxx
+local.properties
