@@ -4,17 +4,29 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.kirkbushman.araw.helpers.AuthUserlessHelper
 import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.util.*
 
 data class TestCredentials(
 
@@ -32,43 +44,61 @@ data class TestCredentials(
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // reddit app id = AkBN4qqK2Fod7A
-
-        setContent {
-            AndroidDevNewsTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-                    Greeting("Android")
-                }
-            }
-        }
+        val flowState = MutableStateFlow<List<String>>(listOf())
         val uiScope = CoroutineScope(Dispatchers.IO)
-        val creds = TestCredentials(
-            clientId = BuildConfig.RedditClientId,
-            redirectUrl = "",
-            scriptClientId = "",
-            scriptClientSecret = "",
-            username = "",
-            password = "",
-            scopes = listOf("read", "save", "account")
-        )
-
-        val userlessAuth = AuthUserlessHelper(
-            context = this,
-            clientId = creds.clientId,
-            deviceId = UUID.randomUUID().toString(),
-            logging = true
-        )
         uiScope.launch {
+            val userlessAuth = AuthUserlessHelper(
+                context = this@MainActivity,
+                clientId = BuildConfig.RedditClientId,
+                deviceId = null,
+                logging = true
+            )
             val redditClient = userlessAuth.getRedditClient()
             Log.d("ddw", "redditClient: $redditClient")
             val submissions =
                 redditClient!!.contributionsClient.submissions("androiddev", limit = 100L)
                     .fetchNext()
+
             submissions!!.forEachIndexed { index, submission ->
                 Log.d("ddw", "#[$index]: ${submission.title}")
             }
+            flowState.emit(submissions.map {
+                it.title
+            })
         }
+
+
+        setContent {
+            AndroidDevNewsTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(color = MaterialTheme.colors.background) {
+                    RedditList(flowState)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RedditList(flowState: StateFlow<List<String>>) {
+    val state = flowState.collectAsState()
+
+    LazyColumn(
+        modifier = Modifier
+            .semantics { testTag = "AAABBBB" }
+            .background(Color.White)
+    ) {
+        items(
+            count = state.value.count(),
+            itemContent = { index ->
+                Text(
+                    modifier = Modifier.padding(16.dp),
+                    text = state.value[index],
+                    fontSize = 20.sp
+                )
+                Divider(modifier = Modifier.padding(16.dp), color = Color.Gray, thickness = 1.dp)
+            }
+        )
     }
 }
 
