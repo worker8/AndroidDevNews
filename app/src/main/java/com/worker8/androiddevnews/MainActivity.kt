@@ -1,10 +1,13 @@
 package com.worker8.androiddevnews
 
 import android.os.Bundle
+import android.text.format.DateUtils
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
@@ -19,14 +22,16 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.kirkbushman.araw.helpers.AuthUserlessHelper
+import com.kirkbushman.araw.models.Submission
+import com.kirkbushman.araw.utils.createdDate
 import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.*
 
 data class TestCredentials(
 
@@ -44,7 +49,7 @@ data class TestCredentials(
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val flowState = MutableStateFlow<List<String>>(listOf())
+        val flowState = MutableStateFlow<List<Submission>>(listOf())
         val uiScope = CoroutineScope(Dispatchers.IO)
         uiScope.launch {
             val userlessAuth = AuthUserlessHelper(
@@ -56,17 +61,24 @@ class MainActivity : ComponentActivity() {
             val redditClient = userlessAuth.getRedditClient()
             Log.d("ddw", "redditClient: $redditClient")
             val submissions =
-                redditClient!!.contributionsClient.submissions("androiddev", limit = 100L)
+                redditClient!!.contributionsClient.submissions("androiddev", limit = 10L)
                     .fetchNext()
 
-            submissions!!.forEachIndexed { index, submission ->
-                Log.d("ddw", "#[$index]: ${submission.title}")
-            }
-            flowState.emit(submissions.map {
-                it.title
-            })
+            submissions!!.map { it.copy(selfText = "hidden", selfTextHtml = "hidden") }
+                .forEachIndexed { index, submission ->
+                    val fields = submission.toString().split(",")
+                    fields.forEach {
+                        Log.d("ddw", "#[$index]: ${it}")
+                    }
+//                Log.d("ddw", "--> comment count: ${submission.numComments}")
+//                Log.d("ddw", "--> vote count: ${submission.score}")
+//                Log.d("ddw", "--> link: ${submission.url}")
+//                Log.d("ddw", "--> thumbnail: ${submission.thumbnailUrl}")
+//                Log.d("ddw", "--> selfText: ${submission.selfText}")
+//                Log.d("ddw", "--> author: ${submission.author}")
+                }
+            flowState.emit(submissions)
         }
-
 
         setContent {
             AndroidDevNewsTheme {
@@ -80,22 +92,43 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun RedditList(flowState: StateFlow<List<String>>) {
+fun RedditList(flowState: StateFlow<List<Submission>>) {
     val state = flowState.collectAsState()
 
     LazyColumn(
         modifier = Modifier
             .semantics { testTag = "AAABBBB" }
-            .background(Color.White)
+            .background(MaterialTheme.colors.background)
     ) {
         items(
             count = state.value.count(),
             itemContent = { index ->
-                Text(
-                    modifier = Modifier.padding(16.dp),
-                    text = state.value[index],
-                    fontSize = 20.sp
-                )
+                val submission = state.value[index]
+                val upvoteRatio = if (submission.upvoteRatio != null) {
+                    "(${submission.upvoteRatio!! * 100}%)"
+                } else {
+                    ""
+                }
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = submission.title,
+                        style = MaterialTheme.typography.h6
+                    )
+                    Row {
+                        Text(
+                            text = submission.author
+                        )
+                        Text(
+                            text = submission.createdDate.toRelativeTimeString(),
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                    if (submission.selfText.isNullOrBlank()) {
+
+                    }
+                    Text(text = submission.score.toString() + " points " + upvoteRatio)
+                    Text(text = submission.numComments.toString() + " comments")
+                }
                 Divider(modifier = Modifier.padding(16.dp), color = Color.Gray, thickness = 1.dp)
             }
         )
@@ -114,3 +147,10 @@ fun DefaultPreview() {
         Greeting("Android")
     }
 }
+
+
+fun Date.toRelativeTimeString() =
+    DateUtils
+        .getRelativeTimeSpanString(time, Date().time, DateUtils.MINUTE_IN_MILLIS)
+        .toString()
+        .lowercase()
