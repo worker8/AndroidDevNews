@@ -80,6 +80,9 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.3.0-rc01")
 //    api("net.dean.jraw:JRAW:1.1.0")
     implementation("com.github.KirkBushman:ARAW:f0171e78e4")
+    implementation("io.coil-kt:coil-compose:1.3.0")
+    implementation("io.coil-kt:coil:1.3.0")
+
 
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
