@@ -1,4 +1,4 @@
-package com.worker8.androiddevnews
+package com.worker8.androiddevnews.reddit
 
 import android.text.method.LinkMovementMethod
 import android.widget.TextView

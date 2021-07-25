@@ -1,4 +1,4 @@
-package com.worker8.androiddevnews
+package com.worker8.androiddevnews.util
 
 import android.text.format.DateUtils
 import java.util.*

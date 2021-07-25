@@ -1,9 +1,10 @@
-package com.worker8.androiddevnews
+package com.worker8.androiddevnews.reddit
 
 import android.os.Bundle
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,57 +40,49 @@ import coil.util.DebugLogger
 import com.kirkbushman.araw.helpers.AuthUserlessHelper
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.utils.createdDate
+import com.worker8.androiddevnews.R
+import com.worker8.androiddevnews.di.IoDispatcher
 import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
+import com.worker8.androiddevnews.util.toRelativeTimeString
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class RedditActivity : AppCompatActivity() {
     @Inject
     lateinit var userlessAuth: AuthUserlessHelper
+
+    @Inject
+    @IoDispatcher
+    lateinit var ioDispatcher: CoroutineDispatcher
+
+//    @Inject
+//    lateinit var redditViewModel: RedditViewModel
+
+    private val viewModel by viewModels<RedditViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val flowState = MutableStateFlow<List<Submission>>(listOf())
-        val uiScope = CoroutineScope(Dispatchers.IO)
-        uiScope.launch {
-            val redditClient = userlessAuth.getRedditClient()
-            val submissions =
-                redditClient!!.contributionsClient.submissions("androiddev", limit = 40L)
-                    .fetchNext()
-            val debugStringBuilder = StringBuilder()
-            submissions!!.map { it.copy(selfText = "(hidden)", selfTextHtml = "(hidden)") }
-                .forEachIndexed { index, submission ->
-                    val fields = submission.toString().split(",")
-                    fields.forEach {
-                        debugStringBuilder.appendLine("#$index:  $it")
-                    }
-                    debugStringBuilder.appendLine("-------")
-
-                    Log.d(
-                        "ddw",
-                        "#$index] domain: ${submission.domain}, ${submission.media}"
-                    )
-//                Log.d("ddw", "--> comment count: ${submission.numComments}")
-//                Log.d("ddw", "--> vote count: ${submission.score}")
-//                Log.d("ddw", "--> link: ${submission.url}")
-//                Log.d("ddw", "--> thumbnail: ${submission.thumbnailUrl}")
-//                Log.d("ddw", "--> selfText: ${submission.selfText}")
-//                Log.d("ddw", "--> author: ${submission.author}")
-                }
-            Log.d("ddw", debugStringBuilder.toString())
-            flowState.emit(submissions)
-        }
+        viewModel.setInput()
+//        val flowState = MutableStateFlow<List<Submission>>(listOf())
+//        val uiScope = CoroutineScope(ioDispatcher)
+//        uiScope.launch {
+//            val redditClient = userlessAuth.getRedditClient()
+//            val submissions =
+//                redditClient!!.contributionsClient.submissions("androiddev", limit = 40L)
+//                    .fetchNext()
+//
+//            flowState.emit(submissions!!)
+//        }
 
         setContent {
             AndroidDevNewsTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    RedditList(flowState)
+                    RedditList(viewModel.state)
                 }
             }
         }
@@ -102,13 +95,6 @@ class Contract {
     }
 }
 
-class Controller() : Contract.ViewState {
-    override val state = MutableStateFlow<List<Submission>>(listOf())
-    fun setInput() {
-
-    }
-}
-
 @Composable
 fun RedditList(flowState: StateFlow<List<Submission>>) {
     val state = flowState.collectAsState()
@@ -116,10 +102,7 @@ fun RedditList(flowState: StateFlow<List<Submission>>) {
         ImageLoader.Builder(LocalContext.current)
             .logger(DebugLogger())
             .build()
-// Set
     CompositionLocalProvider(LocalImageLoader provides ImageLoader(LocalContext.current)) {
-        // Describe the rest of the UI.
-
         LazyColumn(
             modifier = Modifier
                 .semantics { testTag = "AAABBBB" }
@@ -150,7 +133,7 @@ fun RedditList(flowState: StateFlow<List<Submission>>) {
                                 text = submission.createdDate.toRelativeTimeString(),
                                 modifier = Modifier.padding(start = 8.dp)
                             )
-                            submission.linkFlairText?.let { renderFlair(it) }
+                            submission.linkFlairText?.let { RenderFlair(it) }
                         }
                         val imageUrl = if (submission.url.isImageUrl()) {
                             submission.url
@@ -238,7 +221,7 @@ fun RedditList(flowState: StateFlow<List<Submission>>) {
 }
 
 @Composable
-private fun renderFlair(text: String) {
+private fun RenderFlair(text: String) {
     Card(
         Modifier.padding(start = 4.dp),
         shape = RoundedCornerShape(50),
