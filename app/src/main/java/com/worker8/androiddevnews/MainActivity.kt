@@ -95,6 +95,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+class Controller() {
+    val MutableStateFlow<List<Submission>>(listOf())
+}
+
 @Composable
 fun RedditList(flowState: StateFlow<List<Submission>>) {
     val state = flowState.collectAsState()
@@ -251,3 +255,9 @@ fun String.isImageUrl(): Boolean {
             || fileExtension.endsWith(".jpeg")
             || fileExtension.endsWith(".jpg")
 }
+
+// TODO
+// 1. refactor controller, then VM
+// 2. add hilt
+// 3. handle link-only, link-image, self-image
+// 4. handle navigation to internal webview

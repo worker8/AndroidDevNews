@@ -63,29 +63,31 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = rootProject.extra["compose_version"] as String
+        kotlinCompilerExtensionVersion = version("compose")
     }
 }
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.6.0")
+    implementation("androidx.core:core-ktx:${version("ktx")}")
 //    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.1")
-    implementation("androidx.appcompat:appcompat:1.3.0")
-    implementation("com.google.android.material:material:1.4.0")
-    implementation("androidx.compose.ui:ui:${rootProject.extra["compose_version"]}")
-    implementation("androidx.compose.material:material:${rootProject.extra["compose_version"]}")
-    implementation("androidx.compose.ui:ui-tooling:${rootProject.extra["compose_version"]}")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("androidx.activity:activity-compose:1.3.0-rc01")
+    implementation("androidx.appcompat:appcompat:${version("appCompat")}")
+    implementation("com.google.android.material:material:${version("material")}")
+    implementation("androidx.compose.ui:ui:${version("compose")}")
+    implementation("androidx.compose.material:material:${version("compose")}")
+    implementation("androidx.compose.ui:ui-tooling:${version("compose")}")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${version("lifecycleRuntimeKtx")}")
+    implementation("androidx.activity:activity-compose:${version("activityCompose")}")
 //    api("net.dean.jraw:JRAW:1.1.0")
-    implementation("com.github.KirkBushman:ARAW:f0171e78e4")
-    implementation("io.coil-kt:coil-compose:1.3.0")
-    implementation("io.coil-kt:coil:1.3.0")
+    implementation("com.github.KirkBushman:ARAW:${version("ARAW")}")
+    implementation("io.coil-kt:coil-compose:${version("coil")}")
+    implementation("io.coil-kt:coil:${version("coil")}")
 
 
-    testImplementation("junit:junit:4.+")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${rootProject.extra["compose_version"]}")
+    testImplementation("junit:junit:${version("junit")}")
+    androidTestImplementation("androidx.test.ext:junit:${version("junitExt")}")
+    androidTestImplementation("androidx.test.espresso:espresso-core:${version("espresso")}")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${version("compose")}")
 }
+
+fun version(key: String) = rootProject.extra[key] as String
