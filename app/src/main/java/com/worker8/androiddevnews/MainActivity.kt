@@ -147,6 +147,15 @@ fun RedditList(flowState: StateFlow<List<Submission>>) {
                         }
                         Log.d("xmm", "$index: $imageUrl")
                         if (imageUrl.isNotBlank()) {
+                            val height = submission.preview?.source()?.height ?: -1
+                            val width = submission.preview?.source()?.width ?: -1
+                            if (height != -1 && width != -1 && height > width) {
+                                Text("PORTRAIT")
+                            } else if (height != -1 && width != -1 && height < width) {
+                                Text("LANDSCAPE")
+                            } else {
+                                Text("SQUARE")
+                            }
                             val imageRequest = ImageRequest.Builder(LocalContext.current)
                                 // TODO fix error image
                                 .error(R.drawable.ic_launcher_foreground)
@@ -154,11 +163,14 @@ fun RedditList(flowState: StateFlow<List<Submission>>) {
                                 .placeholder(R.drawable.ic_launcher_background)
                                 .data(imageUrl)
                                 .build()
+                            // 1. link - portrait (show at side), landscape (show full)
+                            // 2. selftext - portrait (show at side), landscape (show full)
+
 
                             Image(
                                 painter = rememberImagePainter(imageRequest, imageLoader),
                                 contentDescription = null,
-                                contentScale = ContentScale.Fit,
+                                contentScale = ContentScale.FillWidth,
                                 modifier = Modifier
                                     .fillParentMaxWidth()
 //                                .fillMaxWidth()
@@ -190,12 +202,6 @@ fun RedditList(flowState: StateFlow<List<Submission>>) {
                                     )
                                 }
                             }
-
-                        }
-
-
-                        if (submission.selfText.isNullOrBlank()) {
-
                         }
                         Text(
                             style = MaterialTheme.typography.caption,
