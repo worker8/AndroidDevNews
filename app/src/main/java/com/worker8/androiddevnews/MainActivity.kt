@@ -3,12 +3,15 @@ package com.worker8.androiddevnews
 import android.os.Bundle
 import android.util.Log
 import android.webkit.MimeTypeMap
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -37,25 +40,23 @@ import com.kirkbushman.araw.helpers.AuthUserlessHelper
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.utils.createdDate
 import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.util.*
+import javax.inject.Inject
 
-class MainActivity : ComponentActivity() {
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
+    @Inject
+    lateinit var userlessAuth: AuthUserlessHelper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val flowState = MutableStateFlow<List<Submission>>(listOf())
         val uiScope = CoroutineScope(Dispatchers.IO)
         uiScope.launch {
-            val userlessAuth = AuthUserlessHelper(
-                context = this@MainActivity,
-                clientId = BuildConfig.RedditClientId,
-                deviceId = null,
-                logging = true
-            )
             val redditClient = userlessAuth.getRedditClient()
             val submissions =
                 redditClient!!.contributionsClient.submissions("androiddev", limit = 40L)
@@ -95,8 +96,17 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-class Controller() {
-    val MutableStateFlow<List<Submission>>(listOf())
+class Contract {
+    interface ViewState {
+        val state: MutableStateFlow<List<Submission>>
+    }
+}
+
+class Controller() : Contract.ViewState {
+    override val state = MutableStateFlow<List<Submission>>(listOf())
+    fun setInput() {
+
+    }
 }
 
 @Composable

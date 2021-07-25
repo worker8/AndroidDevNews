@@ -13,6 +13,7 @@ buildscript {
     val junit by extra("4.13.2")
     val junitExt by extra("1.1.3")
     val espresso by extra("3.4.0")
+    val hilt by extra("2.37")
 
     repositories {
         google()
@@ -21,6 +22,7 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:7.0.0-beta05")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.37")
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle.kts files
