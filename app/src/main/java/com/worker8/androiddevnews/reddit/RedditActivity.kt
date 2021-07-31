@@ -8,17 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -66,7 +62,7 @@ class RedditActivity : AppCompatActivity() {
             AndroidDevNewsTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    RedditScreen(controller)
+//                    RedditScreen(controller)
                 }
             }
         }
@@ -74,9 +70,9 @@ class RedditActivity : AppCompatActivity() {
 }
 
 @Composable
-fun RedditScreen(controller: RedditController) {
+fun RedditScreen(controller: RedditController, state: MutableState<List<Submission>>) {
     val scope = rememberCoroutineScope()
-    val state = rememberSaveable { mutableStateOf(listOf<Submission>()) }
+//    val state: MutableState<List<Submission>> = rememberSaveable { mutableStateOf(listOf<Submission>()) }
     DisposableEffect(scope) {
         controller.setInput(scope, state)
         onDispose {
@@ -97,6 +93,7 @@ fun RedditList(state: State<List<Submission>>) {
             modifier = Modifier
                 .semantics { testTag = "AAABBBB" }
                 .background(MaterialTheme.colors.background)
+                .fillMaxHeight()
         ) {
             items(
                 count = state.value.count(),

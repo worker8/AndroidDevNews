@@ -12,7 +12,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.prof.rssparser.Channel
@@ -35,7 +34,7 @@ class PodcastActivity : AppCompatActivity() {
             AndroidDevNewsTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    PodcastScreen(controller = podcastController)
+//                    PodcastScreen(controller = podcastController)
                 }
             }
         }
@@ -43,9 +42,9 @@ class PodcastActivity : AppCompatActivity() {
 }
 
 @Composable
-fun PodcastScreen(controller: PodcastController) {
+fun PodcastScreen(controller: PodcastController, state: MutableState<Channel>) {
     val scope = rememberCoroutineScope()
-    val state = rememberSaveable { mutableStateOf(Channel()) }
+//    val state: MutableState<Channel> = rememberSaveable { mutableStateOf(Channel()) }
     Log.d("ccw", "fromSavaeble: ${System.identityHashCode(state)}")
     DisposableEffect(scope) {
         controller.setInput(scope, state)

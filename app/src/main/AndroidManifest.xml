@@ -12,16 +12,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidDevNews">
-        <activity
-            android:name=".reddit.RedditActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AndroidDevNews.NoActionBar">
+        <activity android:name=".main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".reddit.RedditActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AndroidDevNews.NoActionBar">
+
         </activity>
         <activity
             android:name=".podcast.PodcastActivity"
