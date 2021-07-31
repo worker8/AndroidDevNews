@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,9 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,8 +44,7 @@ import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
 import com.worker8.androiddevnews.util.toRelativeTimeString
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.cancel
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -59,45 +56,38 @@ class RedditActivity : AppCompatActivity() {
     @IoDispatcher
     lateinit var ioDispatcher: CoroutineDispatcher
 
-//    @Inject
-//    lateinit var redditViewModel: RedditViewModel
-
-    private val viewModel by viewModels<RedditViewModel>()
+    @Inject
+    lateinit var controller: RedditController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setInput()
-//        val flowState = MutableStateFlow<List<Submission>>(listOf())
-//        val uiScope = CoroutineScope(ioDispatcher)
-//        uiScope.launch {
-//            val redditClient = userlessAuth.getRedditClient()
-//            val submissions =
-//                redditClient!!.contributionsClient.submissions("androiddev", limit = 40L)
-//                    .fetchNext()
-//
-//            flowState.emit(submissions!!)
-//        }
 
         setContent {
             AndroidDevNewsTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    RedditList(viewModel.state)
+                    RedditScreen(controller)
                 }
             }
         }
     }
 }
 
-class Contract {
-    interface ViewState {
-        val state: MutableStateFlow<List<Submission>>
+@Composable
+fun RedditScreen(controller: RedditController) {
+    val scope = rememberCoroutineScope()
+    val state = rememberSaveable { mutableStateOf(listOf<Submission>()) }
+    DisposableEffect(scope) {
+        controller.setInput(scope, state)
+        onDispose {
+            scope.cancel()
+        }
     }
+    RedditList(state)
 }
 
 @Composable
-fun RedditList(flowState: StateFlow<List<Submission>>) {
-    val state = flowState.collectAsState()
+fun RedditList(state: State<List<Submission>>) {
     val imageLoader =
         ImageLoader.Builder(LocalContext.current)
             .logger(DebugLogger())
@@ -118,7 +108,6 @@ fun RedditList(flowState: StateFlow<List<Submission>>) {
                         ""
                     }
                     Column(modifier = Modifier.padding(16.dp)) {
-
                         Text(
                             text = index.toString() + submission.title,
                             style = MaterialTheme.typography.h6
@@ -178,7 +167,7 @@ fun RedditList(flowState: StateFlow<List<Submission>>) {
                         /* Content Section */
                         if (submission.domain.contains("self.androiddev")) {
                             if (!submission.selfTextHtml.isNullOrBlank()) {
-                                HtmlView(submission.selfTextHtml ?: "(no selfText)")
+                                HtmlViewEncode(submission.selfTextHtml ?: "(no selfText)")
                             }
                         } else {
                             Row(

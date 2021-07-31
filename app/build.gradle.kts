@@ -80,13 +80,18 @@ dependencies {
     implementation("androidx.compose.material:material:${version("compose")}")
     implementation("androidx.compose.ui:ui-tooling:${version("compose")}")
     implementation("androidx.activity:activity-compose:${version("activityCompose")}")
+    implementation("androidx.navigation:navigation-compose:${version("navCompose")}")
     /* reddit client */
     implementation("com.github.KirkBushman:ARAW:${version("ARAW")}")
+    implementation("com.prof18.rssparser:rssparser:${version("rss")}")
     /* image loading libs */
     implementation("io.coil-kt:coil-compose:${version("coil")}")
     implementation("io.coil-kt:coil:${version("coil")}")
     /* DI */
     implementation("com.google.dagger:hilt-android:${version("hilt")}")
+    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
     kapt("com.google.dagger:hilt-android-compiler:${version("hilt")}")
 
     testImplementation("junit:junit:${version("junit")}")

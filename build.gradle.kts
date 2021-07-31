@@ -4,11 +4,13 @@ buildscript {
     val compose by extra("1.0.0-beta09")
     val coil by extra("1.3.0")
     val activityCompose by extra("1.3.0-rc01")
+    val navCompose by extra("2.4.0-alpha05")
     val ktx by extra("1.6.0")
     val appCompat by extra("1.3.0")
     val material by extra("1.4.0")
     val lifecycleRuntimeKtx by extra("2.3.1")
     val ARAW by extra("f0171e78e4")
+    val rss by extra("3.1.5")
     /* test versions */
     val junit by extra("4.13.2")
     val junitExt by extra("1.1.3")

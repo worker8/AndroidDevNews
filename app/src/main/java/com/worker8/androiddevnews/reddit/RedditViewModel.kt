@@ -1,20 +1,24 @@
 package com.worker8.androiddevnews.reddit
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kirkbushman.araw.models.Submission
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
-class RedditViewModel @Inject constructor(var redditRepo: RedditRepo) : Contract.ViewState,
+class RedditViewModel @Inject constructor(var redditRepo: RedditRepo) : RedditContract.ViewState,
     ViewModel() {
-    override val state = MutableStateFlow<List<Submission>>(listOf())
+    override val state = mutableStateOf(listOf<Submission>())
     fun setInput() {
         redditRepo.getRedditClient()
-            .onEach { state.emit(redditRepo.getSubmission()) }
+            .onEach { state.value = redditRepo.getSubmission() }
 //            .map { submissions ->
 //                val debugStringBuilder = StringBuilder()
 //                submissions!!.map { it.copy(selfText = "(hidden)", selfTextHtml = "(hidden)") }
