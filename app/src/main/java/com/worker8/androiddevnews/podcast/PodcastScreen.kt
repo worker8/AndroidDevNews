@@ -1,15 +1,11 @@
 package com.worker8.androiddevnews.podcast
 
-import android.os.Bundle
 import android.util.Log
-import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -17,34 +13,11 @@ import androidx.compose.ui.unit.dp
 import com.prof.rssparser.Channel
 import com.worker8.androiddevnews.ImageAspectRatio
 import com.worker8.androiddevnews.reddit.HtmlView
-import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.cancel
-import javax.inject.Inject
-
-
-@AndroidEntryPoint
-class PodcastActivity : AppCompatActivity() {
-    @Inject
-    lateinit var podcastController: PodcastController
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContent {
-            AndroidDevNewsTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-//                    PodcastScreen(controller = podcastController)
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun PodcastScreen(controller: PodcastController, state: MutableState<Channel>) {
     val scope = rememberCoroutineScope()
-//    val state: MutableState<Channel> = rememberSaveable { mutableStateOf(Channel()) }
     Log.d("ccw", "fromSavaeble: ${System.identityHashCode(state)}")
     DisposableEffect(scope) {
         controller.setInput(scope, state)

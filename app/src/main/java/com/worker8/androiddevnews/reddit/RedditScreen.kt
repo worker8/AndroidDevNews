@@ -1,10 +1,7 @@
 package com.worker8.androiddevnews.reddit
 
-import android.os.Bundle
 import android.util.Log
 import android.webkit.MimeTypeMap
-import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -25,49 +22,16 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT
 import coil.ImageLoader
 import coil.compose.LocalImageLoader
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.util.DebugLogger
-import com.kirkbushman.araw.helpers.AuthUserlessHelper
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.utils.createdDate
 import com.worker8.androiddevnews.R
-import com.worker8.androiddevnews.di.IoDispatcher
-import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
 import com.worker8.androiddevnews.util.toRelativeTimeString
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.cancel
-import javax.inject.Inject
-
-@AndroidEntryPoint
-class RedditActivity : AppCompatActivity() {
-    @Inject
-    lateinit var userlessAuth: AuthUserlessHelper
-
-    @Inject
-    @IoDispatcher
-    lateinit var ioDispatcher: CoroutineDispatcher
-
-    @Inject
-    lateinit var controller: RedditController
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContent {
-            AndroidDevNewsTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-//                    RedditScreen(controller)
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun RedditScreen(controller: RedditController, state: MutableState<List<Submission>>) {
@@ -125,7 +89,7 @@ fun RedditList(state: State<List<Submission>>) {
                             submission.url
                         } else {
                             submission.preview?.source()?.url?.let {
-                                HtmlCompat.fromHtml(it, FROM_HTML_MODE_COMPACT).toString()
+                                HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_COMPACT).toString()
                             } ?: ""
                         }
                         Log.d("xmm", "$index: $imageUrl")
@@ -234,9 +198,3 @@ fun String.isImageUrl(): Boolean {
             || fileExtension.endsWith(".jpeg")
             || fileExtension.endsWith(".jpg")
 }
-
-// TODO
-// 1. refactor controller, then VM
-// 2. add hilt
-// 3. handle link-only, link-image, self-image
-// 4. handle navigation to internal webview

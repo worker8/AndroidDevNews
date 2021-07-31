@@ -19,18 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".reddit.RedditActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AndroidDevNews.NoActionBar">
-
-        </activity>
-        <activity
-            android:name=".podcast.PodcastActivity"
-            android:screenOrientation="sensor">
-
-        </activity>
     </application>
 
 </manifest>
