@@ -5,18 +5,25 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.prof.rssparser.Channel
 import com.worker8.androiddevnews.ImageAspectRatio
 import com.worker8.androiddevnews.reddit.HtmlView
 import kotlinx.coroutines.cancel
 
 @Composable
-fun PodcastScreen(controller: PodcastController, state: MutableState<Channel>) {
+fun PodcastScreen(
+    navController: NavHostController,
+    controller: PodcastController,
+    state: MutableState<Channel>,
+    lazyListState: LazyListState
+) {
     val scope = rememberCoroutineScope()
     Log.d("ccw", "fromSavaeble: ${System.identityHashCode(state)}")
     DisposableEffect(scope) {
@@ -29,13 +36,14 @@ fun PodcastScreen(controller: PodcastController, state: MutableState<Channel>) {
     //controller.state.onEach {
     //    state.value = it
     //}.launchIn(scope)
-    PodcastList(state)
+    PodcastList(state, lazyListState)
 }
 
 @Composable
-fun PodcastList(state: State<Channel>) {
+fun PodcastList(state: State<Channel>, lazyListState: LazyListState) {
     LazyColumn(
-        modifier = Modifier.background(MaterialTheme.colors.background)
+        modifier = Modifier.background(MaterialTheme.colors.background),
+        state = lazyListState
     ) {
         items(
             count = state.value.articles.size + 1,

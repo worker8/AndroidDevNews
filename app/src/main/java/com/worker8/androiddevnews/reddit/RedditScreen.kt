@@ -4,9 +4,11 @@ import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -22,6 +24,7 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
+import androidx.navigation.NavHostController
 import coil.ImageLoader
 import coil.compose.LocalImageLoader
 import coil.compose.rememberImagePainter
@@ -34,7 +37,12 @@ import com.worker8.androiddevnews.util.toRelativeTimeString
 import kotlinx.coroutines.cancel
 
 @Composable
-fun RedditScreen(controller: RedditController, state: MutableState<List<Submission>>) {
+fun RedditScreen(
+    navController: NavHostController,
+    controller: RedditController,
+    state: MutableState<List<Submission>>,
+    lazyListState: LazyListState
+) {
     val scope = rememberCoroutineScope()
 //    val state: MutableState<List<Submission>> = rememberSaveable { mutableStateOf(listOf<Submission>()) }
     DisposableEffect(scope) {
@@ -43,21 +51,27 @@ fun RedditScreen(controller: RedditController, state: MutableState<List<Submissi
             scope.cancel()
         }
     }
-    RedditList(state)
+    RedditList(navController, state, lazyListState)
 }
 
 @Composable
-fun RedditList(state: State<List<Submission>>) {
+fun RedditList(
+    navController: NavHostController,
+    state: State<List<Submission>>,
+    lazyListState: LazyListState
+) {
     val imageLoader =
         ImageLoader.Builder(LocalContext.current)
             .logger(DebugLogger())
             .build()
+
     CompositionLocalProvider(LocalImageLoader provides ImageLoader(LocalContext.current)) {
         LazyColumn(
             modifier = Modifier
                 .semantics { testTag = "AAABBBB" }
                 .background(MaterialTheme.colors.background)
-                .fillMaxHeight()
+                .fillMaxHeight(),
+            state = lazyListState
         ) {
             items(
                 count = state.value.count(),
@@ -68,7 +82,11 @@ fun RedditList(state: State<List<Submission>>) {
                     } else {
                         ""
                     }
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier
+                        .padding(16.dp)
+                        .clickable {
+                            navController.navigate("reddit_detail/${submission.id}")
+                        }) {
                         Text(
                             text = index.toString() + submission.title,
                             style = MaterialTheme.typography.h6
@@ -89,7 +107,8 @@ fun RedditList(state: State<List<Submission>>) {
                             submission.url
                         } else {
                             submission.preview?.source()?.url?.let {
-                                HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_COMPACT).toString()
+                                HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_COMPACT)
+                                    .toString()
                             } ?: ""
                         }
                         Log.d("xmm", "$index: $imageUrl")
@@ -105,9 +124,8 @@ fun RedditList(state: State<List<Submission>>) {
                             }
                             val imageRequest = ImageRequest.Builder(LocalContext.current)
                                 // TODO fix error image
-                                .error(R.drawable.ic_launcher_foreground)
-                                // TODO fix placeholder image
-                                .placeholder(R.drawable.ic_launcher_background)
+                                .error(R.drawable.image_place_holder)
+                                .placeholder(R.drawable.image_place_holder)
                                 .data(imageUrl)
                                 .build()
                             // 1. link - portrait (show at side), landscape (show full)

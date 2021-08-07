@@ -25,10 +25,8 @@ fun ImageAspectRatio(
         .build()
     var (aspectRatio, setAspectRatio) = remember { mutableStateOf(1f) }
     val imageRequest = ImageRequest.Builder(LocalContext.current)
-        // TODO fix error image
-        .error(R.drawable.ic_launcher_foreground)
-        // TODO fix placeholder image
-        .placeholder(R.drawable.ic_launcher_background)
+        .error(R.drawable.image_place_holder)
+        .placeholder(R.drawable.image_place_holder)
         .data(imageUrl)
         .build()
     Image(

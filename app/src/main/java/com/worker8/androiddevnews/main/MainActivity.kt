@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
@@ -12,22 +12,35 @@ import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
+import androidx.navigation.compose.rememberNavController
 import com.kirkbushman.araw.models.Submission
+import com.kirkbushman.araw.models.base.CommentData
 import com.prof.rssparser.Channel
 import com.worker8.androiddevnews.podcast.PodcastController
 import com.worker8.androiddevnews.podcast.PodcastScreen
 import com.worker8.androiddevnews.reddit.RedditController
 import com.worker8.androiddevnews.reddit.RedditScreen
+import com.worker8.androiddevnews.reddit.detail.RedditDetailController
+import com.worker8.androiddevnews.reddit.detail.RedditDetailScreen
 import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var redditController: RedditController
+
+    @Inject
+    lateinit var redditDetailController: RedditDetailController
 
     @Inject
     lateinit var podcastController: PodcastController
@@ -41,6 +54,7 @@ class MainActivity : AppCompatActivity() {
                 Surface(color = MaterialTheme.colors.background) {
                     MainScreen(
                         redditController = redditController,
+                        redditDetailController = redditDetailController,
                         podcastController = podcastController
                     )
                 }
@@ -50,47 +64,108 @@ class MainActivity : AppCompatActivity() {
 }
 
 @Composable
-fun MainScreen(redditController: RedditController, podcastController: PodcastController) {
-    val homeScreenState = rememberSaveable { mutableStateOf(BottomNavType.HOME) }
-    val redditState = rememberSaveable { mutableStateOf(listOf<Submission>()) }
-    val podcastState = rememberSaveable { mutableStateOf(Channel()) }
+fun MainScreen(
+    redditController: RedditController,
+    redditDetailController: RedditDetailController,
+    podcastController: PodcastController
+) {
+    val homeScreenState = remember { mutableStateOf(BottomNavRoute.REDDIT) }
+    val redditState = remember { mutableStateOf(listOf<Submission>()) }
+    val redditListState = rememberLazyListState()
+
+    val redditDetailState = remember { mutableStateOf(listOf<CommentData>()) }
+
+    val podcastState = remember { mutableStateOf(Channel()) }
+    val podcastListState = rememberLazyListState()
+
+    val navController = rememberNavController()
     Column {
-        Row(modifier = Modifier.weight(1f)) {
-            if (homeScreenState.value == BottomNavType.HOME) {
-                RedditScreen(redditController, redditState)
-            } else {
-                PodcastScreen(podcastController, podcastState)
+        NavHost(
+            navController = navController,
+            startDestination = "reddit_group",
+            modifier = Modifier.weight(1f)
+        ) {
+            composable("reddit_group") {
+                val navControllerReddit = rememberNavController()
+                NavHost(
+                    navController = navControllerReddit,
+                    startDestination = BottomNavRoute.REDDIT.toString(),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    composable(BottomNavRoute.REDDIT.toString()) {
+                        RedditScreen(
+                            navControllerReddit,
+                            redditController,
+                            redditState,
+                            redditListState
+                        )
+                    }
+                    composable(
+                        "reddit_detail/{submissionId}",
+                        arguments = listOf(navArgument("submissionId") {
+                            type = NavType.StringType
+                        })
+                    ) { backStackEntry ->
+                        RedditDetailScreen(
+                            redditDetailController,
+                            redditDetailState,
+                            backStackEntry.arguments?.getString("submissionId")!!
+                        )
+//                        Text(
+//                            text = "Submission Id: ${backStackEntry.arguments?.getString("submissionId")}",
+//                            modifier = Modifier
+//                                .fillMaxSize()
+//                                .padding(16.dp)
+//                        )
+                    }
+                }
+            }
+            composable(BottomNavRoute.PODCAST.toString()) {
+                PodcastScreen(navController, podcastController, podcastState, podcastListState)
             }
         }
-        BottomNavigationContent(homeScreenState = homeScreenState)
+        BottomNavigationContent(navController = navController, homeScreenState = homeScreenState)
+//        Row(modifier = Modifier.weight(1f)) {
+//            if (homeScreenState.value == BottomNavType.HOME) {
+//                RedditScreen(redditController, redditState, redditListState)
+//            } else {
+//                PodcastScreen(podcastController, podcastState, podcastListState)
+//            }
+//        }
     }
 }
 
-enum class BottomNavType {
-    HOME,
+object Routes {
+    class Reddit(val stack: Stack<String>)
+}
+
+enum class BottomNavRoute {
+    REDDIT,
     PODCAST
 }
 
 @Composable
 fun BottomNavigationContent(
     modifier: Modifier = Modifier,
-    homeScreenState: MutableState<BottomNavType>
+    navController: NavHostController,
+    homeScreenState: MutableState<BottomNavRoute>
 ) {
     BottomNavigation(modifier = modifier) {
         BottomNavigationItem(
             icon = { Icon(imageVector = Icons.Outlined.Home, contentDescription = null) },
-            selected = homeScreenState.value == BottomNavType.HOME,
+            selected = homeScreenState.value == BottomNavRoute.REDDIT,
             onClick = {
-                homeScreenState.value = BottomNavType.HOME
-//                animate = false
+                homeScreenState.value = BottomNavRoute.REDDIT
+                navController.navigate("reddit_group")
             },
             label = { Text(text = "Reddit") },
         )
         BottomNavigationItem(
             icon = { Icon(imageVector = Icons.Outlined.Phone, contentDescription = null) },
-            selected = homeScreenState.value == BottomNavType.PODCAST,
+            selected = homeScreenState.value == BottomNavRoute.PODCAST,
             onClick = {
-                homeScreenState.value = BottomNavType.PODCAST
+                homeScreenState.value = BottomNavRoute.PODCAST
+                navController.navigate(BottomNavRoute.PODCAST.toString())
 //                animate = false
             },
             label = { Text(text = "Podcast") },
