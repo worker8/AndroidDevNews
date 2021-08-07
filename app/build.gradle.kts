@@ -81,6 +81,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:${version("compose")}")
     implementation("androidx.activity:activity-compose:${version("activityCompose")}")
     implementation("androidx.navigation:navigation-compose:${version("navCompose")}")
+    implementation("androidx.constraintlayout:constraintlayout-compose:${version("constraintLayoutcompose")}")
+
     /* reddit client */
     implementation("com.github.KirkBushman:ARAW:${version("ARAW")}")
     implementation("com.prof18.rssparser:rssparser:${version("rss")}")

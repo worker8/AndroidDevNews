@@ -2,6 +2,7 @@
 buildscript {
     /* versions */
     val compose by extra("1.0.0-beta09")
+    val constraintLayoutcompose by extra("1.0.0-beta02")
     val coil by extra("1.3.0")
     val activityCompose by extra("1.3.0-rc01")
     val navCompose by extra("2.4.0-alpha05")
