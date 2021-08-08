@@ -3,6 +3,7 @@ package com.worker8.androiddevnews.main
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
@@ -30,8 +31,8 @@ import com.worker8.androiddevnews.reddit.RedditScreen
 import com.worker8.androiddevnews.reddit.detail.RedditDetailController
 import com.worker8.androiddevnews.reddit.detail.RedditDetailScreen
 import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
+import com.worker8.androiddevnews.ui.theme.BottomNavBg
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -135,10 +136,6 @@ fun MainScreen(
     }
 }
 
-object Routes {
-    class Reddit(val stack: Stack<String>)
-}
-
 enum class BottomNavRoute {
     REDDIT,
     PODCAST
@@ -152,6 +149,7 @@ fun BottomNavigationContent(
 ) {
     BottomNavigation(modifier = modifier) {
         BottomNavigationItem(
+            modifier = Modifier.background(MaterialTheme.colors.BottomNavBg),
             icon = { Icon(imageVector = Icons.Outlined.Home, contentDescription = null) },
             selected = homeScreenState.value == BottomNavRoute.REDDIT,
             onClick = {
@@ -161,6 +159,7 @@ fun BottomNavigationContent(
             label = { Text(text = "Reddit") },
         )
         BottomNavigationItem(
+            modifier = Modifier.background(MaterialTheme.colors.BottomNavBg),
             icon = { Icon(imageVector = Icons.Outlined.Phone, contentDescription = null) },
             selected = homeScreenState.value == BottomNavRoute.PODCAST,
             onClick = {

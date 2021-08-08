@@ -5,20 +5,23 @@ import android.webkit.MimeTypeMap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.Card
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,6 +36,7 @@ import coil.util.DebugLogger
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.utils.createdDate
 import com.worker8.androiddevnews.R
+import com.worker8.androiddevnews.ui.theme.*
 import com.worker8.androiddevnews.util.toRelativeTimeString
 import kotlinx.coroutines.cancel
 
@@ -93,7 +97,7 @@ fun RedditList(
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                style = MaterialTheme.typography.subtitle2,
+                                style = MaterialTheme.typography.subtitle2.copy(color = MaterialTheme.colors.Primary07),
                                 text = submission.author
                             )
                             Text(
@@ -116,11 +120,12 @@ fun RedditList(
                             val height = submission.preview?.source()?.height ?: -1
                             val width = submission.preview?.source()?.width ?: -1
                             if (height != -1 && width != -1 && height > width) {
-                                Text("PORTRAIT")
+                                // TODO: scale image properly, re-enable this text for debugging
+//                                Text("PORTRAIT")
                             } else if (height != -1 && width != -1 && height < width) {
-                                Text("LANDSCAPE")
+//                                Text("LANDSCAPE")
                             } else {
-                                Text("SQUARE")
+//                                Text("SQUARE")
                             }
                             val imageRequest = ImageRequest.Builder(LocalContext.current)
                                 // TODO fix error image
@@ -131,40 +136,70 @@ fun RedditList(
                             // 1. link - portrait (show at side), landscape (show full)
                             // 2. selftext - portrait (show at side), landscape (show full)
 
-
                             Image(
                                 painter = rememberImagePainter(imageRequest, imageLoader),
                                 contentDescription = null,
                                 contentScale = ContentScale.FillWidth,
                                 modifier = Modifier
                                     .fillParentMaxWidth()
-//                                .fillMaxWidth()
                                     .height(200.dp)
+                                    .padding(top = 8.dp)
                             )
                         }
 
                         /* Content Section */
                         if (submission.domain.contains("self.androiddev")) {
                             if (!submission.selfTextHtml.isNullOrBlank()) {
-                                HtmlViewEncode(submission.selfTextHtml ?: "(no selfText)")
+                                Box(modifier = Modifier.padding(top = 8.dp)) {
+                                    HtmlViewEncode(submission.selfTextHtml ?: "(no selfText)")
+                                }
                             }
                         } else {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(bottom = 8.dp)
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                shape = RoundedCornerShape(4.dp),
+                                backgroundColor = MaterialTheme.colors.Neutral01
                             ) {
-                                Icon(Icons.Outlined.Info, contentDescription = "Link")
-                                Column(modifier = Modifier.padding(start = 4.dp)) {
-                                    Text(
-                                        modifier = Modifier.padding(top = 4.dp),
-                                        text = submission.domain
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .height(60.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .background(MaterialTheme.colors.Primary08)
+                                            .width(2.dp)
+                                            .fillParentMaxHeight()
                                     )
-                                    Text(
-                                        style = MaterialTheme.typography.subtitle2,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        text = submission.url
+                                    Image(
+                                        modifier = Modifier
+                                            .padding(18.dp)
+                                            .size(20.dp),
+                                        imageVector = ImageVector.vectorResource(
+                                            id = R.drawable.ic_link
+                                        ),
+                                        contentDescription = "Link",
+                                        colorFilter = ColorFilter.tint(MaterialTheme.colors.Neutral10)
                                     )
+//                                Icon(Icons.Outlined.Info, contentDescription = "Link")
+                                    Column(
+                                        modifier = Modifier
+                                    ) {
+                                        Text(
+                                            style = MaterialTheme.typography.body2,
+                                            text = submission.domain,
+                                            color = MaterialTheme.colors.Neutral10
+                                        )
+                                        Text(
+                                            style = MaterialTheme.typography.caption,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            text = submission.url,
+                                            color = MaterialTheme.colors.Neutral10
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -178,8 +213,7 @@ fun RedditList(
                         )
                     }
                     Divider(
-                        modifier = Modifier.padding(16.dp),
-                        color = Color.Gray,
+                        color = Color.LightGray,
                         thickness = 1.dp
                     )
                 }
@@ -192,18 +226,14 @@ fun RedditList(
 private fun RenderFlair(text: String) {
     Card(
         Modifier.padding(start = 4.dp),
-        shape = RoundedCornerShape(50),
-        backgroundColor = Color.Gray,
+        shape = RoundedCornerShape(10),
+        backgroundColor = MaterialTheme.colors.Neutral02,
     ) {
         Text(
             style = MaterialTheme.typography.caption.copy(
-                if (isSystemInDarkTheme()) {
-                    Color.Black
-                } else {
-                    Color.White
-                }
+                color = MaterialTheme.colors.onBackground
             ),
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
             text = text
         )
     }
