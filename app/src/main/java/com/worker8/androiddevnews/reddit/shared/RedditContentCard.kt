@@ -1,6 +1,5 @@
 package com.worker8.androiddevnews.reddit.shared
 
-import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,35 +26,27 @@ import coil.util.DebugLogger
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.utils.createdDate
 import com.worker8.androiddevnews.R
-import com.worker8.androiddevnews.reddit.HtmlViewEncode
 import com.worker8.androiddevnews.reddit.RenderFlair
-import com.worker8.androiddevnews.reddit.detail.RedditDetailActivity
 import com.worker8.androiddevnews.reddit.isImageUrl
-import com.worker8.androiddevnews.ui.theme.Neutral01
-import com.worker8.androiddevnews.ui.theme.Neutral10
-import com.worker8.androiddevnews.ui.theme.Primary07
-import com.worker8.androiddevnews.ui.theme.Primary08
+import com.worker8.androiddevnews.ui.HtmlView
+import com.worker8.androiddevnews.ui.theme.*
 import com.worker8.androiddevnews.util.toRelativeTimeString
 
 @Composable
-fun RedditContentCard(submission: Submission) {
-    val context = LocalContext.current
+fun RedditContentCard(submission: Submission, onClick: (submission: Submission) -> Unit) {
+
     Column(modifier = Modifier
         .padding(16.dp)
         .clickable {
-            context.startActivity(
-                Intent(context, RedditDetailActivity::class.java).apply {
-                    putExtra(RedditDetailActivity.SubmissionKey, submission)
-                })
-//                            navController.navigate("reddit_detail/${submission.id}")
+            onClick(submission)
         }) {
         Text(
             text = submission.title,
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.h6.copy(color = MaterialTheme.colors.Primary10)
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                style = MaterialTheme.typography.subtitle2.copy(color = MaterialTheme.colors.Primary07),
+                style = MaterialTheme.typography.subtitle2.copy(color = MaterialTheme.colors.Primary09),
                 text = submission.author
             )
             Text(
@@ -69,7 +60,7 @@ fun RedditContentCard(submission: Submission) {
             submission.url
         } else {
             submission.preview?.source()?.url?.let {
-                HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_COMPACT)
+                HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_LEGACY)
                     .toString()
             } ?: ""
         }
@@ -111,7 +102,7 @@ fun RedditContentCard(submission: Submission) {
         if (submission.domain.contains("self.androiddev")) {
             if (!submission.selfTextHtml.isNullOrBlank()) {
                 Box(modifier = Modifier.padding(top = 8.dp)) {
-                    HtmlViewEncode(submission.selfTextHtml ?: "(no selfText)")
+                    HtmlView(submission.selfTextHtml ?: "(no selfText)", true)
                 }
             }
         } else {
@@ -163,9 +154,14 @@ fun RedditContentCard(submission: Submission) {
                 }
             }
         }
+        val upvoteRatio = if (submission.upvoteRatio != null) {
+            "(${submission.upvoteRatio!! * 100}%)"
+        } else {
+            ""
+        }
         Text(
             style = MaterialTheme.typography.caption,
-            text = submission.score.toString() + " points " + submission.upvoteRatio
+            text = submission.score.toString() + " points " + upvoteRatio
         )
         Text(
             style = MaterialTheme.typography.caption,

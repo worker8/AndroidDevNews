@@ -1,7 +1,6 @@
 package com.worker8.androiddevnews.reddit.detail
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.MaterialTheme
@@ -30,7 +29,6 @@ class RedditDetailActivity : AppCompatActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     val redditDetailState = remember { mutableStateOf(listOf<CommentData>()) }
-                    Log.d("ddw", "submission received!: ${submission.title}")
                     RedditDetailScreen(
                         redditDetailController,
                         redditDetailState,

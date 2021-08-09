@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.prof.rssparser.Channel
 import com.worker8.androiddevnews.ImageAspectRatio
-import com.worker8.androiddevnews.reddit.HtmlView
+import com.worker8.androiddevnews.ui.HtmlView
 import kotlinx.coroutines.cancel
 
 @Composable

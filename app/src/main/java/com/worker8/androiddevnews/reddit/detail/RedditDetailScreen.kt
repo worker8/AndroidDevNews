@@ -17,11 +17,11 @@ import com.kirkbushman.araw.models.Comment
 import com.kirkbushman.araw.models.MoreComments
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.models.base.CommentData
-import com.worker8.androiddevnews.reddit.HtmlViewEncode
 import com.worker8.androiddevnews.reddit.shared.RedditContentCard
+import com.worker8.androiddevnews.ui.HtmlView
 import kotlinx.coroutines.cancel
 
-private val ColorBarWidth = 3
+private const val ColorBarWidth = 3
 
 @Composable
 fun RedditDetailScreen(
@@ -46,7 +46,7 @@ fun RedditDetailScreen(
             count = state.value.count() + 1,
             itemContent = { index ->
                 if (index == 0) {
-                    RedditContentCard(submission)
+                    RedditContentCard(submission) {/* do nothing */ }
                 } else {
                     val (columnHeight, setColumnHeight) = remember { mutableStateOf(1) }
                     val item = state.value[index - 1]
@@ -92,8 +92,9 @@ fun RedditDetailScreen(
                                     modifier = Modifier
                                         .wrapContentHeight()
                                         .padding(start = 6.dp)
+                                        .background(Color.DarkGray)
                                 ) {
-                                    HtmlViewEncode(item.bodyHtml)
+                                    HtmlView(item.bodyHtml, true)
                                 }
                             } else if (item is MoreComments) {
                                 Text(
