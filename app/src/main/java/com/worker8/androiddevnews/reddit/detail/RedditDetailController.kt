@@ -2,6 +2,7 @@ package com.worker8.androiddevnews.reddit.detail
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.models.base.CommentData
 import com.worker8.androiddevnews.reddit.RedditRepo
 import kotlinx.coroutines.CoroutineScope
@@ -19,12 +20,12 @@ class RedditDetailController @Inject constructor(private val redditRepo: RedditR
     fun init(
         scope: CoroutineScope,
         mutableState: MutableState<List<CommentData>>,
-        submissionId: String
+        submission: Submission
     ) {
         _state = mutableState
         redditRepo.getRedditClient()
             .onEach {
-                val commentTree = redditRepo.getComment(submissionId)
+                val commentTree = redditRepo.getComment(submission.id)
                 val result = mutableListOf<CommentData>()
                 commentTree?.forEach { _commentData ->
                     traverseComments(_commentData, result)

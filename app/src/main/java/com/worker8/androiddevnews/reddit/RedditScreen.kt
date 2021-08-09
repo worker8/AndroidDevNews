@@ -1,6 +1,6 @@
 package com.worker8.androiddevnews.reddit
 
-import android.util.Log
+import android.content.Intent
 import android.webkit.MimeTypeMap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,6 +36,8 @@ import coil.util.DebugLogger
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.utils.createdDate
 import com.worker8.androiddevnews.R
+import com.worker8.androiddevnews.reddit.detail.RedditDetailActivity
+import com.worker8.androiddevnews.reddit.detail.RedditDetailActivity.Companion.SubmissionKey
 import com.worker8.androiddevnews.ui.theme.*
 import com.worker8.androiddevnews.util.toRelativeTimeString
 import kotlinx.coroutines.cancel
@@ -86,10 +88,15 @@ fun RedditList(
                     } else {
                         ""
                     }
+                    val context = LocalContext.current
                     Column(modifier = Modifier
                         .padding(16.dp)
                         .clickable {
-                            navController.navigate("reddit_detail/${submission.id}")
+                            context.startActivity(
+                                Intent(context, RedditDetailActivity::class.java).apply {
+                                    putExtra(SubmissionKey, submission)
+                                })
+//                            navController.navigate("reddit_detail/${submission.id}")
                         }) {
                         Text(
                             text = index.toString() + submission.title,
@@ -115,7 +122,6 @@ fun RedditList(
                                     .toString()
                             } ?: ""
                         }
-                        Log.d("xmm", "$index: $imageUrl")
                         if (imageUrl.isNotBlank()) {
                             val height = submission.preview?.source()?.height ?: -1
                             val width = submission.preview?.source()?.width ?: -1
@@ -223,7 +229,7 @@ fun RedditList(
 }
 
 @Composable
-private fun RenderFlair(text: String) {
+fun RenderFlair(text: String) {
     Card(
         Modifier.padding(start = 4.dp),
         shape = RoundedCornerShape(10),

@@ -15,8 +15,10 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.kirkbushman.araw.models.Comment
 import com.kirkbushman.araw.models.MoreComments
+import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.models.base.CommentData
 import com.worker8.androiddevnews.reddit.HtmlViewEncode
+import com.worker8.androiddevnews.reddit.shared.RedditContentCard
 import kotlinx.coroutines.cancel
 
 private val ColorBarWidth = 3
@@ -25,11 +27,11 @@ private val ColorBarWidth = 3
 fun RedditDetailScreen(
     controller: RedditDetailController,
     state: MutableState<List<CommentData>>,
-    submissionId: String
+    submission: Submission
 ) {
     val scope = rememberCoroutineScope()
     DisposableEffect(scope) {
-        controller.init(scope, state, submissionId)
+        controller.init(scope, state, submission)
         onDispose {
             scope.cancel()
         }
@@ -41,67 +43,71 @@ fun RedditDetailScreen(
             .padding(start = 4.dp)
     ) {
         items(
-            count = state.value.count(),
+            count = state.value.count() + 1,
             itemContent = { index ->
-                val (columnHeight, setColumnHeight) = remember { mutableStateOf(1) }
-                val item = state.value[index]
-                val columnHeightDp = LocalDensity.current.run { columnHeight.toDp() }
-                ConstraintLayout(
-                    modifier = Modifier
-                        .padding(horizontal = (ColorBarWidth * item.depth).dp)
-                        .fillParentMaxWidth()
-                        .wrapContentHeight()
-                ) {
-                    val (colorBarRef, bodyRef) = createRefs()
-                    Box(
+                if (index == 0) {
+                    RedditContentCard(submission)
+                } else {
+                    val (columnHeight, setColumnHeight) = remember { mutableStateOf(1) }
+                    val item = state.value[index - 1]
+                    val columnHeightDp = LocalDensity.current.run { columnHeight.toDp() }
+                    ConstraintLayout(
                         modifier = Modifier
-                            .background(colors[item.depth % colors.size])
-                            .constrainAs(colorBarRef) {
-                                start.linkTo(parent.start)
-                                width = Dimension.value(ColorBarWidth.dp)
-                                height = Dimension.value(columnHeightDp)
-                            }
-                    )
-                    Column(
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .constrainAs(bodyRef) {
-                                height = Dimension.wrapContent
-                                start.linkTo(colorBarRef.end)
-                                end.linkTo(parent.end)
-                            }
-                            .fillMaxWidth()
-                            .onSizeChanged {
-                                setColumnHeight(it.height)
-                            }
+                            .padding(horizontal = (ColorBarWidth * item.depth).dp)
+                            .fillParentMaxWidth()
+                            .wrapContentHeight()
                     ) {
-                        if (item is Comment) {
-                            Text(
-                                modifier = Modifier
-                                    .wrapContentHeight()
-                                    .padding(start = 4.dp),
-                                style = MaterialTheme.typography.subtitle2,
-                                text = item.author
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .wrapContentHeight()
-                                    .padding(start = 6.dp)
-                            ) {
-                                HtmlViewEncode(item.bodyHtml)
+                        val (colorBarRef, bodyRef) = createRefs()
+                        Box(
+                            modifier = Modifier
+                                .background(colors[item.depth % colors.size])
+                                .constrainAs(colorBarRef) {
+                                    start.linkTo(parent.start)
+                                    width = Dimension.value(ColorBarWidth.dp)
+                                    height = Dimension.value(columnHeightDp)
+                                }
+                        )
+                        Column(
+                            modifier = Modifier
+                                .padding(start = 4.dp)
+                                .constrainAs(bodyRef) {
+                                    height = Dimension.wrapContent
+                                    start.linkTo(colorBarRef.end)
+                                    end.linkTo(parent.end)
+                                }
+                                .fillMaxWidth()
+                                .onSizeChanged {
+                                    setColumnHeight(it.height)
+                                }
+                        ) {
+                            if (item is Comment) {
+                                Text(
+                                    modifier = Modifier
+                                        .wrapContentHeight()
+                                        .padding(start = 4.dp),
+                                    style = MaterialTheme.typography.subtitle2,
+                                    text = item.author
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .wrapContentHeight()
+                                        .padding(start = 6.dp)
+                                ) {
+                                    HtmlViewEncode(item.bodyHtml)
+                                }
+                            } else if (item is MoreComments) {
+                                Text(
+                                    modifier = Modifier
+                                        .wrapContentHeight()
+                                        .padding(start = 4.dp),
+                                    style = MaterialTheme.typography.subtitle2,
+                                    text = "Load More (${item.children.size})"
+                                )
                             }
-                        } else if (item is MoreComments) {
-                            Text(
-                                modifier = Modifier
-                                    .wrapContentHeight()
-                                    .padding(start = 4.dp),
-                                style = MaterialTheme.typography.subtitle2,
-                                text = "Load More (${item.children.size})"
-                            )
+
                         }
 
                     }
-
                 }
             })
     }
