@@ -20,10 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import coil.ImageLoader
 import coil.compose.rememberImagePainter
-import coil.request.ImageRequest
-import coil.util.DebugLogger
+import coil.imageLoader
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.utils.createdDate
 import com.worker8.androiddevnews.R
@@ -35,6 +33,7 @@ import com.worker8.androiddevnews.ui.theme.Neutral01
 import com.worker8.androiddevnews.ui.theme.Neutral06
 import com.worker8.androiddevnews.ui.theme.Neutral10
 import com.worker8.androiddevnews.ui.theme.Primary08
+import com.worker8.androiddevnews.util.createImageRequest
 import com.worker8.androiddevnews.util.toRelativeTimeString
 
 
@@ -87,20 +86,19 @@ fun RedditContentCard(
             } else {
 //                                Text("SQUARE")
             }
-            val imageRequest = ImageRequest.Builder(LocalContext.current)
-                // TODO fix error image
-                .error(R.drawable.image_place_holder)
-                .placeholder(R.drawable.image_place_holder)
-                .data(imageUrl)
-                .build()
+//                // TODO fix error image
+//                .error(R.drawable.image_place_holder)
+//                .placeholder(R.drawable.image_place_holder)
+//                .data(imageUrl)
+//                .build()
             // 1. link - portrait (show at side), landscape (show full)
             // 2. selftext - portrait (show at side), landscape (show full)
-            val imageLoader =
-                ImageLoader.Builder(LocalContext.current)
-                    .logger(DebugLogger())
-                    .build()
+
             Image(
-                painter = rememberImagePainter(imageRequest, imageLoader),
+                painter = rememberImagePainter(
+                    createImageRequest(imageUrl),
+                    LocalContext.current.imageLoader
+                ),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier

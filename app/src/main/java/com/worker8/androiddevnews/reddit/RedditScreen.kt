@@ -21,9 +21,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import coil.ImageLoader
-import coil.compose.LocalImageLoader
-import coil.util.DebugLogger
 import com.kirkbushman.araw.models.Submission
 import com.worker8.androiddevnews.reddit.detail.RedditDetailActivity
 import com.worker8.androiddevnews.reddit.detail.RedditDetailActivity.Companion.SubmissionKey
@@ -54,12 +51,8 @@ fun RedditList(
     state: State<List<Submission>>,
     lazyListState: LazyListState
 ) {
-    val imageLoader =
-        ImageLoader.Builder(LocalContext.current)
-            .logger(DebugLogger())
-            .build()
     val context = LocalContext.current
-    CompositionLocalProvider(LocalImageLoader provides ImageLoader(LocalContext.current)) {
+//    CompositionLocalProvider(LocalImageLoader provides ImageLoader(LocalContext.current)) {
         LazyColumn(
             modifier = Modifier
                 .semantics { testTag = "AAABBBB" }
@@ -88,7 +81,7 @@ fun RedditList(
                 }
             )
         }
-    }
+//    }
 }
 
 @Composable
