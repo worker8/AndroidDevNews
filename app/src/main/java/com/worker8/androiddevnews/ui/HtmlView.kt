@@ -12,9 +12,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
 import com.worker8.androiddevnews.util.dpToPx
+import com.worker8.androiddevnews.util.trimTrailingWhitespace
 
 @Composable
-fun HtmlView(content: String, strip: Boolean = false) {
+fun HtmlView(content: String, strip: Boolean = false, onClick: (() -> Unit)? = null) {
     val html = HtmlCompat.fromHtml(content, HtmlCompat.FROM_HTML_MODE_LEGACY)
     // Remembers the HTML formatted description. Re-executes on a new description
     val strippedHtml = if (strip) {
@@ -30,7 +31,7 @@ fun HtmlView(content: String, strip: Boolean = false) {
     // Remembers the HTML formatted description. Re-executes on a new description
     val styledHtml = remember(strippedHtml) {
         val builder =
-            SpannableStringBuilder(strippedHtml)
+            SpannableStringBuilder(trimTrailingWhitespace(strippedHtml))
         val bulletSpans =
             builder.getSpans(0, builder.length, BulletSpan::class.java)
         bulletSpans.forEach {
@@ -58,6 +59,7 @@ fun HtmlView(content: String, strip: Boolean = false) {
         },
         update = {
             it.text = styledHtml
+            it.setOnClickListener { onClick?.invoke() }
         }
     )
 }

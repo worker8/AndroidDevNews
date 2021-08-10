@@ -1,6 +1,7 @@
 package com.worker8.androiddevnews.reddit
 
 import android.content.Intent
+import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -38,7 +39,6 @@ fun RedditScreen(
     lazyListState: LazyListState
 ) {
     val scope = rememberCoroutineScope()
-//    val state: MutableState<List<Submission>> = rememberSaveable { mutableStateOf(listOf<Submission>()) }
     DisposableEffect(scope) {
         controller.setInput(scope, state)
         onDispose {
@@ -71,142 +71,11 @@ fun RedditList(
                 count = state.value.count(),
                 itemContent = { index ->
                     val submission = state.value[index]
-//                    val upvoteRatio = if (submission.upvoteRatio != null) {
-//                        "(${submission.upvoteRatio!! * 100}%)"
-//                    } else {
-//                        ""
-//                    }
-//                    val context = LocalContext.current
-//                    Column(modifier = Modifier
-//                        .padding(16.dp)
-//                        .clickable {
-//                            context.startActivity(
-//                                Intent(context, RedditDetailActivity::class.java).apply {
-//                                    putExtra(SubmissionKey, submission)
-//                                })
-////                            navController.navigate("reddit_detail/${submission.id}")
-//                        }) {
-//                        Text(
-//                            text = index.toString() + submission.title,
-//                            style = MaterialTheme.typography.h6
-//                        )
-//                        Row(verticalAlignment = Alignment.CenterVertically) {
-//                            Text(
-//                                style = MaterialTheme.typography.subtitle2.copy(color = MaterialTheme.colors.Primary07),
-//                                text = submission.author
-//                            )
-//                            Text(
-//                                style = MaterialTheme.typography.caption,
-//                                text = submission.createdDate.toRelativeTimeString(),
-//                                modifier = Modifier.padding(start = 8.dp)
-//                            )
-//                            submission.linkFlairText?.let { RenderFlair(it) }
-//                        }
-//                        val imageUrl = if (submission.url.isImageUrl()) {
-//                            submission.url
-//                        } else {
-//                            submission.preview?.source()?.url?.let {
-//                                HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_COMPACT)
-//                                    .toString()
-//                            } ?: ""
-//                        }
-//                        if (imageUrl.isNotBlank()) {
-//                            val height = submission.preview?.source()?.height ?: -1
-//                            val width = submission.preview?.source()?.width ?: -1
-//                            if (height != -1 && width != -1 && height > width) {
-//                                // TODO: scale image properly, re-enable this text for debugging
-////                                Text("PORTRAIT")
-//                            } else if (height != -1 && width != -1 && height < width) {
-////                                Text("LANDSCAPE")
-//                            } else {
-////                                Text("SQUARE")
-//                            }
-//                            val imageRequest = ImageRequest.Builder(LocalContext.current)
-//                                // TODO fix error image
-//                                .error(R.drawable.image_place_holder)
-//                                .placeholder(R.drawable.image_place_holder)
-//                                .data(imageUrl)
-//                                .build()
-//                            // 1. link - portrait (show at side), landscape (show full)
-//                            // 2. selftext - portrait (show at side), landscape (show full)
-//
-//                            Image(
-//                                painter = rememberImagePainter(imageRequest, imageLoader),
-//                                contentDescription = null,
-//                                contentScale = ContentScale.FillWidth,
-//                                modifier = Modifier
-//                                    .fillParentMaxWidth()
-//                                    .height(200.dp)
-//                                    .padding(top = 8.dp)
-//                            )
-//                        }
-//
-//                        /* Content Section */
-//                        if (submission.domain.contains("self.androiddev")) {
-//                            if (!submission.selfTextHtml.isNullOrBlank()) {
-//                                Box(modifier = Modifier.padding(top = 8.dp)) {
-//                                    HtmlView(submission.selfTextHtml ?: "(no selfText)")
-//                                }
-//                            }
-//                        } else {
-//                            Card(
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .padding(vertical = 8.dp),
-//                                shape = RoundedCornerShape(4.dp),
-//                                backgroundColor = MaterialTheme.colors.Neutral01
-//                            ) {
-//                                Row(
-//                                    verticalAlignment = Alignment.CenterVertically,
-//                                    modifier = Modifier
-//                                        .height(60.dp)
-//                                ) {
-//                                    Box(
-//                                        modifier = Modifier
-//                                            .background(MaterialTheme.colors.Primary08)
-//                                            .width(2.dp)
-//                                            .fillParentMaxHeight()
-//                                    )
-//                                    Image(
-//                                        modifier = Modifier
-//                                            .padding(18.dp)
-//                                            .size(20.dp),
-//                                        imageVector = ImageVector.vectorResource(
-//                                            id = R.drawable.ic_link
-//                                        ),
-//                                        contentDescription = "Link",
-//                                        colorFilter = ColorFilter.tint(MaterialTheme.colors.Neutral10)
-//                                    )
-////                                Icon(Icons.Outlined.Info, contentDescription = "Link")
-//                                    Column(
-//                                        modifier = Modifier
-//                                    ) {
-//                                        Text(
-//                                            style = MaterialTheme.typography.body2,
-//                                            text = submission.domain,
-//                                            color = MaterialTheme.colors.Neutral10
-//                                        )
-//                                        Text(
-//                                            style = MaterialTheme.typography.caption,
-//                                            maxLines = 1,
-//                                            overflow = TextOverflow.Ellipsis,
-//                                            text = submission.url,
-//                                            color = MaterialTheme.colors.Neutral10
-//                                        )
-//                                    }
-//                                }
-//                            }
-//                        }
-//                        Text(
-//                            style = MaterialTheme.typography.caption,
-//                            text = submission.score.toString() + " points " + upvoteRatio
-//                        )
-//                        Text(
-//                            style = MaterialTheme.typography.caption,
-//                            text = submission.numComments.toString() + " comments"
-//                        )
-//                    }
-                    RedditContentCard(submission = submission) {
+
+                    RedditContentCard(submission = submission, onLinkClick = { submission ->
+                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(submission.url))
+                        context.startActivity(browserIntent)
+                    }) {
                         context.startActivity(
                             Intent(context, RedditDetailActivity::class.java).apply {
                                 putExtra(SubmissionKey, submission)

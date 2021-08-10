@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
@@ -28,13 +29,21 @@ import com.kirkbushman.araw.utils.createdDate
 import com.worker8.androiddevnews.R
 import com.worker8.androiddevnews.reddit.RenderFlair
 import com.worker8.androiddevnews.reddit.isImageUrl
+import com.worker8.androiddevnews.reddit.upvoteRatioPercentage
 import com.worker8.androiddevnews.ui.HtmlView
-import com.worker8.androiddevnews.ui.theme.*
+import com.worker8.androiddevnews.ui.theme.Neutral01
+import com.worker8.androiddevnews.ui.theme.Neutral06
+import com.worker8.androiddevnews.ui.theme.Neutral10
+import com.worker8.androiddevnews.ui.theme.Primary08
 import com.worker8.androiddevnews.util.toRelativeTimeString
 
-@Composable
-fun RedditContentCard(submission: Submission, onClick: (submission: Submission) -> Unit) {
 
+@Composable
+fun RedditContentCard(
+    submission: Submission,
+    onLinkClick: (submission: Submission) -> Unit,
+    onClick: (submission: Submission) -> Unit
+) {
     Column(modifier = Modifier
         .padding(16.dp)
         .clickable {
@@ -42,11 +51,14 @@ fun RedditContentCard(submission: Submission, onClick: (submission: Submission) 
         }) {
         Text(
             text = submission.title,
-            style = MaterialTheme.typography.h6.copy(color = MaterialTheme.colors.Primary10)
+            style = MaterialTheme.typography.subtitle1.copy(
+                color = MaterialTheme.colors.Neutral10,
+                fontWeight = FontWeight.Bold
+            )
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                style = MaterialTheme.typography.subtitle2.copy(color = MaterialTheme.colors.Primary09),
+                style = MaterialTheme.typography.subtitle2.copy(color = MaterialTheme.colors.Neutral06),
                 text = submission.author
             )
             Text(
@@ -102,7 +114,9 @@ fun RedditContentCard(submission: Submission, onClick: (submission: Submission) 
         if (submission.domain.contains("self.androiddev")) {
             if (!submission.selfTextHtml.isNullOrBlank()) {
                 Box(modifier = Modifier.padding(top = 8.dp)) {
-                    HtmlView(submission.selfTextHtml ?: "(no selfText)", true)
+                    HtmlView(submission.selfTextHtml ?: "(no selfText)", true) {
+                        onClick(submission)
+                    }
                 }
             }
         } else {
@@ -117,6 +131,9 @@ fun RedditContentCard(submission: Submission, onClick: (submission: Submission) 
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .height(60.dp)
+                        .clickable {
+                            onLinkClick(submission)
+                        }
                 ) {
                     Box(
                         modifier = Modifier
@@ -135,9 +152,7 @@ fun RedditContentCard(submission: Submission, onClick: (submission: Submission) 
                         colorFilter = ColorFilter.tint(MaterialTheme.colors.Neutral10)
                     )
 //                                Icon(Icons.Outlined.Info, contentDescription = "Link")
-                    Column(
-                        modifier = Modifier
-                    ) {
+                    Column(modifier = Modifier) {
                         Text(
                             style = MaterialTheme.typography.body2,
                             text = submission.domain,
@@ -154,14 +169,9 @@ fun RedditContentCard(submission: Submission, onClick: (submission: Submission) 
                 }
             }
         }
-        val upvoteRatio = if (submission.upvoteRatio != null) {
-            "(${submission.upvoteRatio!! * 100}%)"
-        } else {
-            ""
-        }
         Text(
             style = MaterialTheme.typography.caption,
-            text = submission.score.toString() + " points " + upvoteRatio
+            text = submission.score.toString() + " points " + submission.upvoteRatioPercentage
         )
         Text(
             style = MaterialTheme.typography.caption,

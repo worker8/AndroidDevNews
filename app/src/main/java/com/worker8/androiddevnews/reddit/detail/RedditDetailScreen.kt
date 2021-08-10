@@ -1,14 +1,21 @@
 package com.worker8.androiddevnews.reddit.detail
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -17,8 +24,12 @@ import com.kirkbushman.araw.models.Comment
 import com.kirkbushman.araw.models.MoreComments
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.models.base.CommentData
+import com.kirkbushman.araw.utils.createdDate
 import com.worker8.androiddevnews.reddit.shared.RedditContentCard
 import com.worker8.androiddevnews.ui.HtmlView
+import com.worker8.androiddevnews.ui.theme.Neutral02
+import com.worker8.androiddevnews.ui.theme.Primary01
+import com.worker8.androiddevnews.util.toRelativeTimeString
 import kotlinx.coroutines.cancel
 
 private const val ColorBarWidth = 3
@@ -36,6 +47,7 @@ fun RedditDetailScreen(
             scope.cancel()
         }
     }
+    val context = LocalContext.current
     LazyColumn(
         modifier = Modifier
             .background(MaterialTheme.colors.background)
@@ -46,21 +58,25 @@ fun RedditDetailScreen(
             count = state.value.count() + 1,
             itemContent = { index ->
                 if (index == 0) {
-                    RedditContentCard(submission) {/* do nothing */ }
+                    RedditContentCard(submission, onLinkClick = { submission ->
+                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(submission.url))
+                        context.startActivity(browserIntent)
+                    }) {/* do nothing */ }
                 } else {
                     val (columnHeight, setColumnHeight) = remember { mutableStateOf(1) }
-                    val item = state.value[index - 1]
+                    val commentData = state.value[index - 1]
                     val columnHeightDp = LocalDensity.current.run { columnHeight.toDp() }
                     ConstraintLayout(
                         modifier = Modifier
-                            .padding(horizontal = (ColorBarWidth * item.depth).dp)
+                            .padding(horizontal = (ColorBarWidth * commentData.depth).dp)
                             .fillParentMaxWidth()
                             .wrapContentHeight()
                     ) {
                         val (colorBarRef, bodyRef) = createRefs()
+                        val color = colors[commentData.depth % colors.size]
                         Box(
                             modifier = Modifier
-                                .background(colors[item.depth % colors.size])
+                                .background(color)
                                 .constrainAs(colorBarRef) {
                                     start.linkTo(parent.start)
                                     width = Dimension.value(ColorBarWidth.dp)
@@ -69,7 +85,6 @@ fun RedditDetailScreen(
                         )
                         Column(
                             modifier = Modifier
-                                .padding(start = 4.dp)
                                 .constrainAs(bodyRef) {
                                     height = Dimension.wrapContent
                                     start.linkTo(colorBarRef.end)
@@ -80,32 +95,71 @@ fun RedditDetailScreen(
                                     setColumnHeight(it.height)
                                 }
                         ) {
-                            if (item is Comment) {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentHeight()
-                                        .padding(start = 4.dp),
-                                    style = MaterialTheme.typography.subtitle2,
-                                    text = item.author
-                                )
+                            if (commentData is Comment) {
+                                Row(
+                                    modifier = Modifier.padding(top = 10.dp),
+                                    verticalAlignment = Alignment.Bottom
+                                ) {
+                                    if (commentData.author == submission.author) {
+                                        Card(
+                                            Modifier.padding(
+                                                start = 9.dp,
+                                                end = 6.dp
+                                            ),
+                                            shape = RoundedCornerShape(50),
+                                            backgroundColor = MaterialTheme.colors.Primary01,
+                                        ) {
+                                            Text(
+                                                style = MaterialTheme.typography.subtitle2.copy(
+                                                    color = MaterialTheme.colors.onBackground
+                                                ),
+                                                modifier = Modifier.padding(
+                                                    horizontal = 8.dp,
+                                                ),
+                                                text = commentData.author
+                                            )
+                                        }
+                                    } else {
+                                        Text(
+                                            modifier = Modifier
+                                                .wrapContentHeight()
+                                                .padding(start = 16.dp, end = 6.dp),
+                                            style = MaterialTheme.typography.subtitle2,
+                                            text = commentData.author
+                                        )
+                                    }
+                                    Text(
+                                        style = MaterialTheme.typography.caption,
+                                        text = commentData.score.toString() + " points | "
+                                    )
+                                    Text(
+                                        style = MaterialTheme.typography.caption,
+                                        text = commentData.createdDate.toRelativeTimeString()
+                                    )
+                                }
+
                                 Box(
                                     modifier = Modifier
                                         .wrapContentHeight()
-                                        .padding(start = 6.dp)
-                                        .background(Color.DarkGray)
+                                        .padding(
+                                            top = 4.dp,
+                                            bottom = 10.dp,
+                                            start = 16.dp,
+                                            end = 16.dp
+                                        )
                                 ) {
-                                    HtmlView(item.bodyHtml, true)
+                                    HtmlView(commentData.bodyHtml, true)
                                 }
-                            } else if (item is MoreComments) {
+                            } else if (commentData is MoreComments) {
                                 Text(
                                     modifier = Modifier
                                         .wrapContentHeight()
-                                        .padding(start = 4.dp),
-                                    style = MaterialTheme.typography.subtitle2,
-                                    text = "Load More (${item.children.size})"
+                                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                                    style = MaterialTheme.typography.caption,
+                                    text = "Load More (${commentData.children.size})"
                                 )
                             }
-
+                            Divider(color = MaterialTheme.colors.Neutral02, thickness = 1.dp)
                         }
 
                     }

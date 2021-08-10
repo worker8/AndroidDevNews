@@ -15,6 +15,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -117,7 +118,13 @@ fun BottomNavigationContent(
                 homeScreenState.value = BottomNavRoute.REDDIT
                 navController.navigate(BottomNavRoute.REDDIT.toString())
             },
-            label = { Text(text = "Reddit") },
+            label = {
+                Text(
+                    text = "Reddit", style = MaterialTheme.typography.caption.copy(
+                        color = Color.White
+                    )
+                )
+            },
         )
         BottomNavigationItem(
             modifier = Modifier.background(MaterialTheme.colors.BottomNavBg),
@@ -127,7 +134,13 @@ fun BottomNavigationContent(
                 homeScreenState.value = BottomNavRoute.PODCAST
                 navController.navigate(BottomNavRoute.PODCAST.toString())
             },
-            label = { Text(text = "Podcast") },
+            label = {
+                Text(
+                    text = "Podcast", style = MaterialTheme.typography.caption.copy(
+                        color = Color.White
+                    )
+                )
+            },
         )
     }
 
