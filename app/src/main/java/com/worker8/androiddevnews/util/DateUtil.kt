@@ -7,4 +7,4 @@ fun Date.toRelativeTimeString() =
     DateUtils
         .getRelativeTimeSpanString(time, Date().time, DateUtils.MINUTE_IN_MILLIS)
         .toString()
-        .lowercase()
+        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }

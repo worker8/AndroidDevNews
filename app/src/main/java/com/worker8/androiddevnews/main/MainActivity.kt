@@ -20,8 +20,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.icosillion.podengine.models.Podcast
 import com.kirkbushman.araw.models.Submission
-import com.prof.rssparser.Channel
 import com.worker8.androiddevnews.podcast.PodcastController
 import com.worker8.androiddevnews.podcast.PodcastScreen
 import com.worker8.androiddevnews.reddit.RedditController
@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
             AndroidDevNewsTheme {
                 // A surface container using the 'background' color from the theme
@@ -65,7 +64,7 @@ fun MainScreen(
     val redditState = remember { mutableStateOf(listOf<Submission>()) }
     val redditListState = rememberLazyListState()
 
-    val podcastState = remember { mutableStateOf(Channel()) }
+    val podcastState = remember { mutableStateOf<Podcast?>(null) }
     val podcastListState = rememberLazyListState()
 
     val navController = rememberNavController()
@@ -143,5 +142,4 @@ fun BottomNavigationContent(
             },
         )
     }
-
 }

@@ -111,8 +111,12 @@ fun RedditContentCard(
         /* Content Section */
         if (submission.domain.contains("self.androiddev")) {
             if (!submission.selfTextHtml.isNullOrBlank()) {
-                Box(modifier = Modifier.padding(top = 8.dp)) {
-                    HtmlView(submission.selfTextHtml ?: "(no selfText)", true) {
+                Box(modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)) {
+                    HtmlView(
+                        content = submission.selfTextHtml ?: "(no selfText)",
+                        strip = true,
+                        truncation = true
+                    ) {
                         onClick(submission)
                     }
                 }

@@ -15,7 +15,12 @@ import com.worker8.androiddevnews.util.dpToPx
 import com.worker8.androiddevnews.util.trimTrailingWhitespace
 
 @Composable
-fun HtmlView(content: String, strip: Boolean = false, onClick: (() -> Unit)? = null) {
+fun HtmlView(
+    content: String,
+    strip: Boolean = false,
+    truncation: Boolean = false,
+    onClick: (() -> Unit)? = null
+) {
     val html = HtmlCompat.fromHtml(content, HtmlCompat.FROM_HTML_MODE_LEGACY)
     // Remembers the HTML formatted description. Re-executes on a new description
     val strippedHtml = if (strip) {
@@ -51,6 +56,12 @@ fun HtmlView(content: String, strip: Boolean = false, onClick: (() -> Unit)? = n
 
     // Displays the TextView on the screen and updates with the HTML description when inflated
     // Updates to htmlDescription will make AndroidView recompose and update the text
+
+    val truncated = if (truncation && styledHtml.length > 300) {
+        styledHtml.substring(0, 300) + "..."
+    } else {
+        styledHtml
+    }
     AndroidView(
         factory = { context ->
             TextView(context).apply {
@@ -58,7 +69,7 @@ fun HtmlView(content: String, strip: Boolean = false, onClick: (() -> Unit)? = n
             }
         },
         update = {
-            it.text = styledHtml
+            it.text = truncated
             it.setOnClickListener { onClick?.invoke() }
         }
     )

@@ -11,7 +11,8 @@ buildscript {
     val material by extra("1.4.0")
     val lifecycleRuntimeKtx by extra("2.3.1")
     val ARAW by extra("f0171e78e4")
-    val rss by extra("3.1.5")
+    val rssProf18 by extra("3.1.5")
+    val rssPodcastFeed by extra("2.4.1")
     /* test versions */
     val junit by extra("4.13.2")
     val junitExt by extra("1.1.3")

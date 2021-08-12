@@ -148,7 +148,7 @@ fun RedditDetailScreen(
                                             end = 16.dp
                                         )
                                 ) {
-                                    HtmlView(commentData.bodyHtml, true)
+                                    HtmlView(content = commentData.bodyHtml, strip = true, truncation = false)
                                 }
                             } else if (commentData is MoreComments) {
                                 Text(

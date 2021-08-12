@@ -85,7 +85,9 @@ dependencies {
 
     /* reddit client */
     implementation("com.github.KirkBushman:ARAW:${version("ARAW")}")
-    implementation("com.prof18.rssparser:rssparser:${version("rss")}")
+    /* rss */
+    implementation("com.prof18.rssparser:rssparser:${version("rssProf18")}")
+    implementation("com.icosillion.podengine:podengine:${version("rssPodcastFeed")}")
     /* image loading libs */
     implementation("io.coil-kt:coil-compose:${version("coil")}")
     implementation("io.coil-kt:coil:${version("coil")}")
