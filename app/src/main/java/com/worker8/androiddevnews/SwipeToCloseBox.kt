@@ -22,11 +22,23 @@ import androidx.compose.ui.unit.IntOffset
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+/**
+ * A layout composable with [content].
+ * [SwipeToCloseBox] is actually just a [androidx.compose.foundation.layout.Box] that detects swiping to close.
+ * If [SwipeToCloseBox] is used with a transparent [android.app.Activity], swiping towards right over the [closeThreshold] will close the entire activity.
+ *
+ * @param onCloseCallback this callback will be invoked after the close animation is completed
+ * @param closeThreshold range: 0the percentage of the screenWidth to close the view. E.g. 0.2f means when you drag the view more than 20%, and release, this view will be closed. Must be between 0 and 1, inclusive.
+ * @param closeAlpha the alpha of the view when the dragging crosses the threshold. Must be between 0 and 1, inclusive.
+ * @param animationDuration duration of the animation. In milliseconds.
+ * @param content the content to be rendered
+ */
 @Composable
 fun SwipeToCloseBox(
     onCloseCallback: () -> Unit,
-    closeThreshold: Float = 0.2f, /* should between 0 - 1f */
-    closeAlpha: Float = 0.7f, /* should between 0 - 1f */
+    closeThreshold: Float = 0.2f,
+    closeAlpha: Float = 0.7f,
+    animationDuration: Int = 200,
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
@@ -38,19 +50,12 @@ fun SwipeToCloseBox(
         var screenWidth = remember { mutableStateOf(0) }
         var isMoreThanThreshold = remember { mutableStateOf(false) }
         val animationScope = rememberCoroutineScope()
-        val animateFloat = remember { Animatable(0f) }
+        val animatableFloat = remember { Animatable(0f) }
 
         Box(
             Modifier
-                .offset {
-                    IntOffset(
-                        animateFloat.value.roundToInt(),
-                        0
-                    )
-                }
-                .onSizeChanged {
-                    screenWidth.value = it.width
-                }
+                .offset { IntOffset(animatableFloat.value.roundToInt(), 0) }
+                .onSizeChanged { screenWidth.value = it.width }
                 .fillMaxSize()
                 .background(Transparent)
                 .alpha(
@@ -69,23 +74,24 @@ fun SwipeToCloseBox(
                                 0f
                             }
                             animationScope.launch {
-                                animateFloat.animateTo(
+                                animatableFloat.animateTo(
                                     targetValue = targetValue,
                                     animationSpec = tween(
-                                        durationMillis = 100,
+                                        durationMillis = animationDuration,
                                         easing = LinearEasing
                                     )
                                 )
+                                if (isMoreThanThreshold.value) {
+                                    onCloseCallback()
+                                }
                             }
-                            if (isMoreThanThreshold.value) {
-                                onCloseCallback()
-                            }
-                        }, onDrag = { _, dragAmount ->
+                        },
+                        onDrag = { _, dragAmount ->
                             isMoreThanThreshold.value =
                                 offsetX.value.toInt() > (screenWidth.value) * closeThreshold
-                            offsetX.value = animateFloat.value + dragAmount.x
+                            offsetX.value = animatableFloat.value + dragAmount.x
                             animationScope.launch {
-                                animateFloat.snapTo(offsetX.value)
+                                animatableFloat.snapTo(offsetX.value)
                             }
                         })
                 }
@@ -94,4 +100,3 @@ fun SwipeToCloseBox(
         }
     }
 }
-
