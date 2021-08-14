@@ -44,9 +44,6 @@ fun PodcastScreen(
         }
     }
 
-    //controller.state.onEach {
-    //    state.value = it
-    //}.launchIn(scope)
     if (state.value != null) {
         PodcastList(state, lazyListState)
     }
@@ -116,12 +113,6 @@ fun PodcastList(state: State<Podcast?>, lazyListState: LazyListState) {
                         truncation = true
                     )
                     PlayButton(duration = episode.iTunesInfo.duration)
-//                    Button(
-//                        onClick = { /*TODO*/ },
-//                        modifier = Modifier.background(Color.Transparent)
-//                    ) {
-//
-//                    }
                     Divider(
                         color = MaterialTheme.colors.Neutral02,
                         thickness = 1.dp,

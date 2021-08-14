@@ -19,7 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".reddit.detail.RedditDetailActivity" />
+        <activity
+            android:name=".reddit.detail.RedditDetailActivity"
+            android:theme="@style/Theme.Transparent" />
     </application>
 
 </manifest>
