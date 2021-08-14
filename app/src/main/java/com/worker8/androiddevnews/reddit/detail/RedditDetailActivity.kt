@@ -1,7 +1,6 @@
 package com.worker8.androiddevnews.reddit.detail
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.Animatable
@@ -59,37 +58,11 @@ class RedditDetailActivity : AppCompatActivity() {
                     val animationScope = rememberCoroutineScope()
                     val animateFloat = remember { Animatable(0f) }
 
-//                    val offsetAnimation = animateDpAsState(
-//                        if (onPressed.value) {
-//                            Log.d("ddw", "1")
-//                            LocalDensity.current.run { offsetX.value.toDp() }
-//                        } else {
-//                            if (!isMoreThanHalf.value) {
-//                                Log.d("ddw", "2")
-//                                0.dp
-//                            } else {
-//                                Log.d("ddw", "3")
-//                                LocalDensity.current.run { screenWidth.value.toDp() }
-//                            }
-//                        }
-//                    ) { endValue ->
-//                        Log.d("ddw", "animation ends")
-//                        if (!onPressed.value) {
-//                            offsetX.value = endValue.value
-//                        }
-//                    }
                     Box(
                         Modifier
                             .offset {
                                 IntOffset(
-//                                    offsetX.value.roundToInt(),
-//                                    if (onDragStarted.value) {
-//                                    offsetX.value.roundToInt()
-                                    animateFloat.value.roundToInt()
-//                                    } else {
-//                                    offsetAnimation.value.roundToPx()
-//                                    }
-                                    ,
+                                    animateFloat.value.roundToInt(),
                                     offsetY.value.roundToInt()
                                 )
                             }
@@ -97,7 +70,6 @@ class RedditDetailActivity : AppCompatActivity() {
                                 screenWidth.value = it.width
                             }
                             .fillMaxSize()
-//                            .size(200.dp, 200.dp)
                             .background(Transparent)
                             .alpha(
                                 if (isMoreThanHalf.value) {
@@ -110,41 +82,42 @@ class RedditDetailActivity : AppCompatActivity() {
                                 detectTapGestures(
                                     onPress = {
                                         onPressed.value = true
-                                        Log.d("ddw", "DOWN DOWN DOWN DOWN DOWN")
-
-                                    },
-                                    onTap = {
-//                                        onPressed.value = false
-                                        Log.d("ddw", "UP UP UP UP UP UP UP UP")
                                     }
                                 )
                             }
                             .pointerInput(Unit) {
                                 detectDragGestures(onDragEnd = {
-                                    Log.d("ddw", "END END END END END")
                                     onPressed.value = false
-                                    animationScope.launch {
-                                        animateFloat.animateTo(
-                                            targetValue = 0f,
-                                            animationSpec = tween(
-                                                durationMillis = 100,
-                                                easing = LinearEasing
-                                            )
-                                        )
-                                    }
                                     if (isMoreThanHalf.value) {
-                                        finish()
+                                        animationScope.launch {
+                                            animateFloat.animateTo(
+                                                targetValue = screenWidth.value.toFloat(),
+                                                animationSpec = tween(
+                                                    durationMillis = 100,
+                                                    easing = LinearEasing
+                                                )
+                                            )
+                                            finish()
+                                        }
+                                    } else {
+                                        animationScope.launch {
+                                            animateFloat.animateTo(
+                                                targetValue = 0f,
+                                                animationSpec = tween(
+                                                    durationMillis = 100,
+                                                    easing = LinearEasing
+                                                )
+                                            )
+                                        }
                                     }
-                                }, onDrag = { change, dragAmount ->
-                                    Log.d("ddw", "offsetX.value.toInt(): ${offsetX.value.toInt()}")
-//                                    Log.d("ddw", "screenWidth.value: ${screenWidth.value}")
+
+                                }, onDrag = { _, dragAmount ->
                                     isMoreThanHalf.value =
                                         offsetX.value.toInt() > (screenWidth.value) * 0.2
                                     offsetX.value = animateFloat.value + dragAmount.x
                                     animationScope.launch {
                                         animateFloat.snapTo(offsetX.value)
                                     }
-//                                        offsetY.value = offsetY.value + dragAmount.y
                                 })
                             }
                     ) {
