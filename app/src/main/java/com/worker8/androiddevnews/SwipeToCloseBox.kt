@@ -41,62 +41,56 @@ fun SwipeToCloseBox(
     animationDuration: Int = 200,
     content: @Composable BoxScope.() -> Unit
 ) {
+    var offsetX = remember { mutableStateOf(0f) }
+    var screenWidth = remember { mutableStateOf(0) }
+    var isMoreThanThreshold = remember { mutableStateOf(false) }
+    val animationScope = rememberCoroutineScope()
+    val animatableFloat = remember { Animatable(0f) }
+
     Box(
-        modifier = Modifier
+        Modifier
+            .offset { IntOffset(animatableFloat.value.roundToInt(), 0) }
+            .onSizeChanged { screenWidth.value = it.width }
             .fillMaxSize()
             .background(Transparent)
-    ) {
-        var offsetX = remember { mutableStateOf(0f) }
-        var screenWidth = remember { mutableStateOf(0) }
-        var isMoreThanThreshold = remember { mutableStateOf(false) }
-        val animationScope = rememberCoroutineScope()
-        val animatableFloat = remember { Animatable(0f) }
-
-        Box(
-            Modifier
-                .offset { IntOffset(animatableFloat.value.roundToInt(), 0) }
-                .onSizeChanged { screenWidth.value = it.width }
-                .fillMaxSize()
-                .background(Transparent)
-                .alpha(
-                    if (isMoreThanThreshold.value) {
-                        closeAlpha
-                    } else {
-                        1f
-                    }
-                )
-                .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDragEnd = {
-                            val targetValue = if (isMoreThanThreshold.value) {
-                                screenWidth.value.toFloat()
-                            } else {
-                                0f
-                            }
-                            animationScope.launch {
-                                animatableFloat.animateTo(
-                                    targetValue = targetValue,
-                                    animationSpec = tween(
-                                        durationMillis = animationDuration,
-                                        easing = LinearEasing
-                                    )
-                                )
-                                if (isMoreThanThreshold.value) {
-                                    onCloseCallback()
-                                }
-                            }
-                        },
-                        onDrag = { _, dragAmount ->
-                            isMoreThanThreshold.value =
-                                offsetX.value.toInt() > (screenWidth.value) * closeThreshold
-                            offsetX.value = animatableFloat.value + dragAmount.x
-                            animationScope.launch {
-                                animatableFloat.snapTo(offsetX.value)
-                            }
-                        })
+            .alpha(
+                if (isMoreThanThreshold.value) {
+                    closeAlpha
+                } else {
+                    1f
                 }
-        ) {
-            content()
-        }
+            )
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDragEnd = {
+                        val targetValue = if (isMoreThanThreshold.value) {
+                            screenWidth.value.toFloat()
+                        } else {
+                            0f
+                        }
+                        animationScope.launch {
+                            animatableFloat.animateTo(
+                                targetValue = targetValue,
+                                animationSpec = tween(
+                                    durationMillis = animationDuration,
+                                    easing = LinearEasing
+                                )
+                            )
+                            if (isMoreThanThreshold.value) {
+                                onCloseCallback()
+                            }
+                        }
+                    },
+                    onDrag = { _, dragAmount ->
+                        isMoreThanThreshold.value =
+                            offsetX.value.toInt() > (screenWidth.value) * closeThreshold
+                        offsetX.value = animatableFloat.value + dragAmount.x
+                        animationScope.launch {
+                            animatableFloat.snapTo(offsetX.value)
+                        }
+                    })
+            }
+    ) {
+        content()
     }
 }
