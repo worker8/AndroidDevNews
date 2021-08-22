@@ -2,7 +2,11 @@ package com.worker8.androiddevnews.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
+import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material.ripple.RippleAlpha
+import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 
 
@@ -186,12 +190,38 @@ fun AndroidDevNewsTheme(
         LightColorPalette
     }
     val defaultTypography = Typography()
+
     MaterialTheme(
         colors = colors,
         typography = Typography(
             caption = defaultTypography.caption.copy(color = colors.Neutral08)
         ),
         shapes = Shapes,
-        content = content
+        content = {
+            val temp = LocalRippleTheme.provides(RippleCustomTheme)
+            CompositionLocalProvider(temp) {
+                content()
+            }
+//            ProvideTextStyle(
+//                value = TextStyle(color = Color.White),
+//                content = content
+//            )
+        }
     )
+}
+
+
+private object RippleCustomTheme : RippleTheme {
+
+    //Your custom implementation...
+    @Composable
+    override fun defaultColor() =
+        MaterialTheme.colors.Primary03
+
+    @Composable
+    override fun rippleAlpha(): RippleAlpha =
+        RippleTheme.defaultRippleAlpha(
+            MaterialTheme.colors.Primary09,
+            lightTheme = isSystemInDarkTheme()
+        )
 }

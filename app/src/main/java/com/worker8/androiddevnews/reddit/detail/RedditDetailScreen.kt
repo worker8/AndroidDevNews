@@ -58,10 +58,14 @@ fun RedditDetailScreen(
             count = state.value.count() + 1,
             itemContent = { index ->
                 if (index == 0) {
-                    RedditContentCard(submission, onLinkClick = { submission ->
-                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(submission.url))
-                        context.startActivity(browserIntent)
-                    }) {/* do nothing */ }
+                    RedditContentCard(
+                        submission = submission,
+                        truncation = false,
+                        onLinkClick = { submission ->
+                            val browserIntent =
+                                Intent(Intent.ACTION_VIEW, Uri.parse(submission.url))
+                            context.startActivity(browserIntent)
+                        }) {/* do nothing */ }
                 } else {
                     val (columnHeight, setColumnHeight) = remember { mutableStateOf(1) }
                     val commentData = state.value[index - 1]
@@ -148,7 +152,11 @@ fun RedditDetailScreen(
                                             end = 16.dp
                                         )
                                 ) {
-                                    HtmlView(content = commentData.bodyHtml, strip = true, truncation = false)
+                                    HtmlView(
+                                        content = commentData.bodyHtml,
+                                        strip = true,
+                                        truncation = false
+                                    )
                                 }
                             } else if (commentData is MoreComments) {
                                 Text(

@@ -20,8 +20,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.icosillion.podengine.models.Episode
 import com.icosillion.podengine.models.Podcast
 import com.kirkbushman.araw.models.Submission
+import com.worker8.androiddevnews.podcast.PodcastContract
 import com.worker8.androiddevnews.podcast.PodcastController
 import com.worker8.androiddevnews.podcast.PodcastScreen
 import com.worker8.androiddevnews.reddit.RedditController
@@ -29,7 +32,9 @@ import com.worker8.androiddevnews.reddit.RedditScreen
 import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
 import com.worker8.androiddevnews.ui.theme.BottomNavBg
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.MutableSharedFlow
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -39,15 +44,24 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var podcastController: PodcastController
 
+    @Inject
+    lateinit var simpleExoPlayer: SimpleExoPlayer
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val input = object : PodcastContract.Input {
+            override val listPlayClick = MutableSharedFlow<Episode>()
+            override val controlPlayClick = MutableSharedFlow<Unit>()
+        }
         setContent {
             AndroidDevNewsTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     MainScreen(
                         redditController = redditController,
-                        podcastController = podcastController
+                        podcastController = podcastController,
+                        input = input,
+                        exoPlayer = simpleExoPlayer
                     )
                 }
             }
@@ -58,15 +72,23 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun MainScreen(
     redditController: RedditController,
-    podcastController: PodcastController
+    podcastController: PodcastController,
+    input: PodcastContract.Input,
+    exoPlayer: SimpleExoPlayer
 ) {
     val homeScreenState = remember { mutableStateOf(BottomNavRoute.REDDIT) }
     val redditState = remember { mutableStateOf(listOf<Submission>()) }
     val redditListState = rememberLazyListState()
 
-    val podcastState = remember { mutableStateOf<Podcast?>(null) }
-    val podcastListState = rememberLazyListState()
+//    val podcastState =
+//    val podcastListState =
 
+    val viewState = object : PodcastContract.ViewState {
+        override val podcast = remember { mutableStateOf<Podcast?>(null) }
+        override val currentPlayingEpisode = remember { mutableStateOf<Episode?>(null) }
+        override val isPlaying = remember { mutableStateOf(false) }
+        override val lazyListState = rememberLazyListState()
+    }
     val navController = rememberNavController()
     Column {
         NavHost(
@@ -83,7 +105,13 @@ fun MainScreen(
                 )
             }
             composable(BottomNavRoute.PODCAST.toString()) {
-                PodcastScreen(navController, podcastController, podcastState, podcastListState)
+                PodcastScreen(
+                    navController,
+                    podcastController,
+                    viewState,
+                    input,
+                    exoPlayer
+                )
             }
         }
         BottomNavigationContent(navController = navController, homeScreenState = homeScreenState)

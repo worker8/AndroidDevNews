@@ -18,6 +18,7 @@ buildscript {
     val junitExt by extra("1.1.3")
     val espresso by extra("3.4.0")
     val hilt by extra("2.37")
+    val exoplayer by extra("2.15.0")
 
     repositories {
         google()

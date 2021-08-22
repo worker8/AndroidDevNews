@@ -88,6 +88,9 @@ dependencies {
     /* rss */
     implementation("com.prof18.rssparser:rssparser:${version("rssProf18")}")
     implementation("com.icosillion.podengine:podengine:${version("rssPodcastFeed")}")
+    /* exoplayer - for podcast */
+    implementation("com.google.android.exoplayer:exoplayer:${version("exoplayer")}")
+
     /* image loading libs */
     implementation("io.coil-kt:coil-compose:${version("coil")}")
     implementation("io.coil-kt:coil:${version("coil")}")

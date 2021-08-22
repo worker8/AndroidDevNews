@@ -53,34 +53,37 @@ fun RedditList(
 ) {
     val context = LocalContext.current
 //    CompositionLocalProvider(LocalImageLoader provides ImageLoader(LocalContext.current)) {
-        LazyColumn(
-            modifier = Modifier
-                .semantics { testTag = "AAABBBB" }
-                .background(MaterialTheme.colors.background)
-                .fillMaxHeight(),
-            state = lazyListState
-        ) {
-            items(
-                count = state.value.count(),
-                itemContent = { index ->
-                    val submission = state.value[index]
+    LazyColumn(
+        modifier = Modifier
+            .semantics { testTag = "AAABBBB" }
+            .background(MaterialTheme.colors.background)
+            .fillMaxHeight(),
+        state = lazyListState
+    ) {
+        items(
+            count = state.value.count(),
+            itemContent = { index ->
+                val submission = state.value[index]
 
-                    RedditContentCard(submission = submission, onLinkClick = { submission ->
+                RedditContentCard(
+                    submission = submission,
+                    truncation = true,
+                    onLinkClick = { submission ->
                         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(submission.url))
                         context.startActivity(browserIntent)
                     }) {
-                        context.startActivity(
-                            Intent(context, RedditDetailActivity::class.java).apply {
-                                putExtra(SubmissionKey, submission)
-                            })
-                    }
-                    Divider(
-                        color = Color.LightGray,
-                        thickness = 1.dp
-                    )
+                    context.startActivity(
+                        Intent(context, RedditDetailActivity::class.java).apply {
+                            putExtra(SubmissionKey, submission)
+                        })
                 }
-            )
-        }
+                Divider(
+                    color = Color.LightGray,
+                    thickness = 1.dp
+                )
+            }
+        )
+    }
 //    }
 }
 

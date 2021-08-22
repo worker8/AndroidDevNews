@@ -40,6 +40,7 @@ import com.worker8.androiddevnews.util.toRelativeTimeString
 @Composable
 fun RedditContentCard(
     submission: Submission,
+    truncation: Boolean,
     onLinkClick: (submission: Submission) -> Unit,
     onClick: (submission: Submission) -> Unit
 ) {
@@ -115,7 +116,7 @@ fun RedditContentCard(
                     HtmlView(
                         content = submission.selfTextHtml ?: "(no selfText)",
                         strip = true,
-                        truncation = true
+                        truncation = truncation
                     ) {
                         onClick(submission)
                     }
