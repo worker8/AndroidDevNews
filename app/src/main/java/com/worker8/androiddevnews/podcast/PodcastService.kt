@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Binder
 import android.os.Build
+import android.os.Parcelable
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat.*
@@ -17,8 +18,9 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.worker8.androiddevnews.R
-import com.worker8.androiddevnews.TestServiceActivity
+import com.worker8.androiddevnews.main.MainActivity
 import com.worker8.androiddevnews.util.tickerFlow
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.util.*
@@ -35,7 +37,8 @@ class PodcastService : Service() {
     private val scope = CoroutineScope(Job())
 
     companion object {
-        val notificationId = 0x44323
+        const val NotificationId = 0x44323
+        const val Parcel = "Parcel"
     }
 
     private val exoPlayer: SimpleExoPlayer by lazy {
@@ -46,29 +49,10 @@ class PodcastService : Service() {
                     Intent(applicationContext, PodcastService::class.java).also {
                         startService(it)
                     }
-                    Log.d("ddw", "play state change: $playbackState")
                 }
             })
         }
     }
-
-
-    /* TODO: delete later */
-    private val mp3Url =
-        "https://cdn.simplecast.com/audio/20f35050-e836-44cd-8f7f-fd13e8cb2e44/episodes/c52401d1-990c-4a55-8f9f-a6fffa45ed9c/audio/f6de3688-9e3c-4a68-9d00-e7d88087dd21/default_tc.mp3?aid=rss_feed&feed=LpAGSLnY"
-
-    // Random number generator
-    private val mGenerator = Random()
-    private var _count = 0
-    val count: Int
-        get() {
-            _count++
-            return _count
-        }
-
-    /** method for clients  */
-    val randomNumber: Int
-        get() = mGenerator.nextInt(100)
 
     private val onStartCommandFlow = MutableSharedFlow<Unit>()
     val progressFlow = MutableSharedFlow<Float>()
@@ -93,7 +77,6 @@ class PodcastService : Service() {
             .flowOn(Dispatchers.Main)
             .onEach {
                 val progress = exoPlayer.currentPosition.toFloat() / exoPlayer.duration.toFloat()
-                Log.d("ddw", "emit progress: $progress")
                 progressFlow.emit(progress)
             }
             .flowOn(Dispatchers.Main)
@@ -106,19 +89,22 @@ class PodcastService : Service() {
     var notificationTitle: String? = null
     var notificationDesc: String? = null
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d("ddw", "[service] onStartCommand action: ${intent?.action}")
 
-        val initAction = Action.Init(
-            notificationTitle ?: "(no title1)",
-            notificationDesc ?: "(no description1)",
-            intent?.getStringExtra("mp3Url") ?: "",
-//            "https://cdn.simplecast.com/audio/20f35050-e836-44cd-8f7f-fd13e8cb2e44/episodes/c52401d1-990c-4a55-8f9f-a6fffa45ed9c/audio/f6de3688-9e3c-4a68-9d00-e7d88087dd21/default_tc.mp3?aid=rss_feed&feed=LpAGSLnY"
-        )
+//        Log.d("ddw", "[service] onStartCommand parcel: ${}")
+
         exoPlayer.apply {
             when (intent?.getStringExtra("action")) {
-                initAction.name -> {
-                    notificationTitle = intent.getStringExtra("title")
-                    notificationDesc = intent.getStringExtra("desc")
+                "Init" -> {
+                    val initActionParcel = intent.getParcelableExtra<Action.Init>(Parcel)
+                    val initAction = Action.Init(
+                        notificationTitle ?: "(no title1)",
+                        notificationDesc ?: "(no description1)",
+                        initActionParcel?.mp3Url ?: "",
+                    )
+                    notificationTitle = initActionParcel?.title ?: "(no title1)"
+                    notificationDesc = initActionParcel?.description ?: "(no desc1)"
+//                    notificationTitle = intent.getStringExtra("title")
+//                    notificationDesc = intent.getStringExtra("desc")
                     initAction.call(exoPlayer, this@PodcastService)
                 }
                 Action.Forward.name -> {
@@ -137,7 +123,8 @@ class PodcastService : Service() {
         }
 
         val pendingIntent =
-            Intent(applicationContext, TestServiceActivity::class.java).let { notificationIntent ->
+            //TODO - deeplink into podcast
+            Intent(applicationContext, MainActivity::class.java).let { notificationIntent ->
                 PendingIntent.getActivity(applicationContext, 0, notificationIntent, 0)
             }
 
@@ -172,14 +159,14 @@ class PodcastService : Service() {
                 .addAction(Action.PlayPause.buildNotificationAction(this, exoPlayer.isPlaying))
                 .addAction(Action.Forward.buildNotificationAction(this, exoPlayer.isPlaying))
                 .addAction(Action.Close.buildNotificationAction(this, exoPlayer.isPlaying))
-                .setContentTitle(initAction.title)
-                .setContentText(initAction.description)
+                .setContentTitle(notificationTitle)
+                .setContentText(notificationDesc)
                 .setSmallIcon(R.drawable.exo_icon_circular_play)
                 .setContentIntent(pendingIntent)
-                .setTicker(initAction.title)
+                .setTicker(notificationTitle)
                 .setOnlyAlertOnce(true)
                 .build()
-            startForeground(notificationId, notification)
+            startForeground(NotificationId, notification)
             mediaSession.isActive = true
 
         } else {
@@ -221,7 +208,9 @@ class PodcastService : Service() {
     }
 
     sealed interface Action {
-        class Init(val title: String, val description: String, val mp3Url: String) : Action {
+        @Parcelize
+        data class Init(val title: String, val description: String, val mp3Url: String) : Action,
+            Parcelable {
             override val name = "Init"
             override fun call(exoPlayer: SimpleExoPlayer, service: Service) {
                 val mediaItem = MediaItem.fromUri(mp3Url)
@@ -302,13 +291,10 @@ class PodcastService : Service() {
                 exoPlayer: SimpleExoPlayer,
                 service: Service
             ) {
-                Log.d("ddw", "closing actions")
                 exoPlayer.stop() // stop exoplayer
-//                service.stopSelf() // stop service
-//                (service.applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
-//                    .cancel(notificationId)
+                // TODO - is stopForeground & stopSelf both needed?
                 NotificationManagerCompat.from(service.applicationContext)
-                    .cancel(notificationId)
+                    .cancel(NotificationId)
                 service.stopForeground(true)
                 service.stopSelf()
             }

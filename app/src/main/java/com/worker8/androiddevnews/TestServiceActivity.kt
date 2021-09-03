@@ -7,6 +7,7 @@ import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.os.Parcelable
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import com.worker8.androiddevnews.podcast.PodcastService
+import kotlinx.android.parcel.Parcelize
 
 class TestServiceActivity : AppCompatActivity() {
     private lateinit var mService: PodcastService
@@ -43,7 +45,6 @@ class TestServiceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TestServiceScreen {
-                onButtonClick()
             }
         }
     }
@@ -67,19 +68,6 @@ class TestServiceActivity : AppCompatActivity() {
         unbindService(connection)
         mBound = false
     }
-
-    /** Called when a button is clicked (the button in the layout file attaches to
-     * this method with the android:onClick attribute)  */
-    private fun onButtonClick() {
-        if (mBound) {
-            // Call a method from the LocalService.
-            // However, if this call were something that might hang, then this request should
-            // occur in a separate thread to avoid slowing down the activity performance.
-            val num: Int = mService.randomNumber
-            val count = mService.count
-            Toast.makeText(this, "number: $num, count: $count", Toast.LENGTH_SHORT).show()
-        }
-    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -96,3 +84,6 @@ fun TestServiceScreen(callback: () -> Unit) {
         )
     )
 }
+
+@Parcelize
+data class TempParcel(val name: String) : Parcelable

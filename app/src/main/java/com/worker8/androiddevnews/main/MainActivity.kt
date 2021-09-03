@@ -103,16 +103,16 @@ class MainActivity : AppCompatActivity() {
             override val startServiceCallback: (String, String, String) -> Unit =
                 { title, desc, mp3Url ->
                     Intent(this@MainActivity, PodcastService::class.java).also { _intent ->
-                        _intent.putExtra("action", "Init")//TODO, hardcode
-                        Log.d("ddw", "AAAAAA title: $title")
-                        _intent.putExtra("title", title)
-                        _intent.putExtra("desc", desc)
-                        _intent.putExtra("mp3Url", mp3Url)
+                        val initAction = PodcastService.Action.Init(
+                            title = title,
+                            description = desc,
+                            mp3Url = mp3Url
+                        )
+                        _intent.putExtra("action", "Init") // TODO, hardcode
+                        _intent.putExtra(PodcastService.Parcel, initAction)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            Log.d("ddw", "111")
                             startForegroundService(_intent)
                         } else {
-                            Log.d("ddw", "222")
                             startService(_intent)
                         }
                         bindService(_intent, connection, Context.BIND_NOT_FOREGROUND)
