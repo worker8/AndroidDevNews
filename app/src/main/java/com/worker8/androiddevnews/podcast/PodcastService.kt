@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Binder
 import android.os.Build
+import android.os.IBinder
 import android.os.Parcelable
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -44,8 +45,39 @@ class PodcastService : Service() {
     private val exoPlayer: SimpleExoPlayer by lazy {
         SimpleExoPlayer.Builder(applicationContext).build().apply {
             addListener(object : Player.Listener {
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    super.onIsPlayingChanged(isPlaying)
+                    scope.launch {
+                        isPlayingFlow.emit(isPlaying)
+                    }
+                }
+
                 override fun onPlaybackStateChanged(playbackState: Int) {
                     super.onPlaybackStateChanged(playbackState)
+//                    Log.d("ddw", "playbackState: $playbackState")
+//                    if (playWhenReady && playbackState == Player.STATE_READY) {
+//                        Log.d("ccw", "STATE = playing")
+//                        // media actually playing
+//                    } else if (playWhenReady) {
+//                        Log.d("ccw", "STATE = buffering?")
+//                        // might be idle (plays after prepare()),
+//                        // buffering (plays when data available)
+//                        // or ended (plays when seek away from end)
+//                    } else {
+//                        Log.d("ccw", "STATE = pause")
+//                        // player paused in any state
+//                    }
+//                    when (playbackState) {
+//                        STATE_FAST_FORWARDING -> {
+//                            Log.d("ddw", "STATE_FAST_FORWARDING")
+//                        }
+//                        STATE_PAUSED -> {
+//                            Log.d("ddw", "STATE_PAUSED")
+//                        }
+//                        STATE_PLAYING -> {
+//                            Log.d("ddw", "STATE_PLAYING")
+//                        }
+//                    }
                     Intent(applicationContext, PodcastService::class.java).also {
                         startService(it)
                     }
@@ -55,7 +87,12 @@ class PodcastService : Service() {
     }
 
     private val onStartCommandFlow = MutableSharedFlow<Unit>()
-    val progressFlow = MutableSharedFlow<Float>()
+
+    class CurrentProgress(val title: String, val progress: Float, val iconUrl: String)
+
+    val progressFlow = MutableSharedFlow<CurrentProgress>()
+    val isPlayingFlow = MutableSharedFlow<Boolean>()
+
     private val mediaSession: MediaSessionCompat by lazy {
         MediaSessionCompat(applicationContext, "PodcastService").apply {
             setCallback(object : MediaSessionCompat.Callback() {
@@ -77,7 +114,13 @@ class PodcastService : Service() {
             .flowOn(Dispatchers.Main)
             .onEach {
                 val progress = exoPlayer.currentPosition.toFloat() / exoPlayer.duration.toFloat()
-                progressFlow.emit(progress)
+                progressFlow.emit(
+                    CurrentProgress(
+                        title = initAction?.title ?: "",
+                        progress = progress,
+                        iconUrl = initAction?.iconUrl ?: ""
+                    )
+                )
             }
             .flowOn(Dispatchers.Main)
             .launchIn(scope)
@@ -110,6 +153,7 @@ class PodcastService : Service() {
                     initActionParcel?.title ?: "untitled",
                     initActionParcel?.description ?: "",
                     initActionParcel?.mp3Url ?: "",
+                    initActionParcel?.iconUrl ?: ""
                 )
                 initAction?.onClick(exoPlayer, this@PodcastService)
             }
@@ -189,7 +233,19 @@ class PodcastService : Service() {
         fun getService(): PodcastService = this@PodcastService
     }
 
-    override fun onBind(intent: Intent) = binder
+    override fun onBind(intent: Intent?): IBinder? {
+//        scope.launch(Dispatchers.Main) {
+//            val progress = exoPlayer.currentPosition.toFloat() / exoPlayer.duration.toFloat()
+//            progressFlow.emit(
+//                CurrentProgress(
+//                    title = initAction?.title ?: "",
+//                    progress = progress,
+//                    iconUrl = initAction?.iconUrl ?: ""
+//                )
+//            )
+//        }
+        return binder
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -213,7 +269,12 @@ class PodcastService : Service() {
 
     sealed interface Action {
         @Parcelize
-        data class Init(val title: String, val description: String, val mp3Url: String) : Action,
+        data class Init(
+            val title: String,
+            val description: String,
+            val mp3Url: String,
+            val iconUrl: String
+        ) : Action,
             Parcelable {
             override fun onClick(exoPlayer: SimpleExoPlayer, service: Service) {
                 val mediaItem = MediaItem.fromUri(mp3Url)

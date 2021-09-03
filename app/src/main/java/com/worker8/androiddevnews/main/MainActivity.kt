@@ -66,7 +66,8 @@ class MainActivity : AppCompatActivity() {
 
     private var mBound: Boolean = false
     private lateinit var mService: PodcastService
-    val progressFlow = MutableSharedFlow<Float>()
+    val progressFlow = MutableSharedFlow<PodcastService.CurrentProgress>()
+    val isPlayingFlow = MutableSharedFlow<Boolean>()
 
     /** Defines callbacks for service binding, passed to bindService()  */
     private val connection = object : ServiceConnection {
@@ -81,6 +82,12 @@ class MainActivity : AppCompatActivity() {
                 .onEach {
                     Log.d("ddw", "emit2: $it")
                     progressFlow.emit(it)
+                }
+                .flowOn(Dispatchers.Main)
+                .launchIn(scope)
+            mService.isPlayingFlow
+                .onEach {
+                    isPlayingFlow.emit(it)
                 }
                 .flowOn(Dispatchers.Main)
                 .launchIn(scope)
@@ -99,14 +106,16 @@ class MainActivity : AppCompatActivity() {
         val input = object : PodcastContract.Input {
             override val listPlayClick = MutableSharedFlow<Episode>()
             override val controlPlayClick = MutableSharedFlow<Unit>()
-            override val progress = progressFlow
-            override val startServiceCallback: (String, String, String) -> Unit =
-                { title, desc, mp3Url ->
+            override val isPlaying = isPlayingFlow
+            override val update = progressFlow
+            override val startServiceCallback: (String, String, String, String) -> Unit =
+                { title, desc, mp3Url, iconUrl ->
                     Intent(this@MainActivity, PodcastService::class.java).also { _intent ->
                         val initAction = PodcastService.Action.Init(
                             title = title,
                             description = desc,
-                            mp3Url = mp3Url
+                            mp3Url = mp3Url,
+                            iconUrl = iconUrl
                         )
                         _intent.putExtra("action", "Init") // TODO, hardcode
                         _intent.putExtra(PodcastService.Parcel, initAction)
@@ -115,7 +124,7 @@ class MainActivity : AppCompatActivity() {
                         } else {
                             startService(_intent)
                         }
-                        bindService(_intent, connection, Context.BIND_NOT_FOREGROUND)
+//                        bindService(_intent, connection, Context.BIND_NOT_FOREGROUND)
                     }
                 }
         }
@@ -132,6 +141,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        bindService(
+            Intent(this@MainActivity, PodcastService::class.java),
+            connection,
+            Context.BIND_NOT_FOREGROUND
+        )
     }
 
     override fun onStop() {
@@ -161,6 +175,8 @@ fun MainScreen(
     val viewState = object : PodcastContract.ViewState {
         override val podcast = remember { mutableStateOf<Podcast?>(null) }
         override val progress = remember { mutableStateOf(0f) }
+        override val currentPlaying =
+            remember { mutableStateOf<PodcastService.CurrentProgress?>(null) }
         override val currentPlayingEpisode = remember { mutableStateOf<Episode?>(null) }
         override val isPlaying = remember { mutableStateOf(false) }
         override val lazyListState = rememberLazyListState()

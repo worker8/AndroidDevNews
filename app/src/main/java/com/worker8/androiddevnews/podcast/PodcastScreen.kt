@@ -82,7 +82,7 @@ fun PodcastScreen(
             }
         }
 
-        if (viewState.currentPlayingEpisode.value != null) {
+        if (viewState.currentPlaying.value != null) {
             PlayerControl(viewState, input, scope)
         }
     }
@@ -129,7 +129,7 @@ fun PlayerControl(
                 .padding(vertical = 8.dp, horizontal = 16.dp),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            text = viewState.currentPlayingEpisode.value?.title ?: "Nothing is playing..."
+            text = viewState.currentPlaying.value?.title ?: "Nothing is playing..."
         )
         Icon(
             modifier = Modifier
