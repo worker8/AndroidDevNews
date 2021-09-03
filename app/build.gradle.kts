@@ -88,8 +88,7 @@ dependencies {
     /* rss */
     implementation("com.prof18.rssparser:rssparser:${version("rssProf18")}")
     implementation("com.icosillion.podengine:podengine:${version("rssPodcastFeed")}")
-    /* exoplayer - for podcast */
-    implementation("com.google.android.exoplayer:exoplayer:${version("exoplayer")}")
+
 
     /* image loading libs */
     implementation("io.coil-kt:coil-compose:${version("coil")}")
@@ -100,6 +99,16 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
     kapt("com.google.dagger:hilt-android-compiler:${version("hilt")}")
+
+    /* exoplayer - for podcast */
+    implementation("com.google.android.exoplayer:exoplayer:${version("exoplayer")}")
+    implementation("com.google.android.exoplayer:exoplayer-core:${version("exoplayer")}")
+
+    /* for notification compat */
+    implementation("androidx.media:media:1.1.0")
+//    implementation("com.google.android.exoplayer:extension-mediasession:${version("exoplayer")}")
+//    implementation("com.google.android.exoplayer:exoplayer-ui:${version("exoplayer")}")
+
 
     testImplementation("junit:junit:${version("junit")}")
     androidTestImplementation("androidx.test.ext:junit:${version("junitExt")}")

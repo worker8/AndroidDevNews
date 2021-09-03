@@ -10,10 +10,13 @@ class PodcastContract {
     interface Input {
         val listPlayClick: MutableSharedFlow<Episode>
         val controlPlayClick: MutableSharedFlow<Unit>
+        val progress: MutableSharedFlow<Float>
+        val startServiceCallback: (String, String, String) -> Unit
     }
 
     interface ViewState {
         val podcast: MutableState<Podcast?>
+        val progress: MutableState<Float>
         val currentPlayingEpisode: MutableState<Episode?>
         val isPlaying: MutableState<Boolean>
         val lazyListState: LazyListState

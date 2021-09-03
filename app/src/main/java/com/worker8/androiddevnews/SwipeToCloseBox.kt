@@ -1,7 +1,7 @@
 package com.worker8.androiddevnews
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -38,7 +38,7 @@ fun SwipeToCloseBox(
     onCloseCallback: () -> Unit,
     closeThreshold: Float = 0.2f,
     closeAlpha: Float = 0.7f,
-    animationDuration: Int = 200,
+    animationDuration: Int = 300,
     content: @Composable BoxScope.() -> Unit
 ) {
     var offsetX = remember { mutableStateOf(0f) }
@@ -73,7 +73,7 @@ fun SwipeToCloseBox(
                                 targetValue = targetValue,
                                 animationSpec = tween(
                                     durationMillis = animationDuration,
-                                    easing = LinearEasing
+                                    easing = LinearOutSlowInEasing
                                 )
                             )
                             if (isMoreThanThreshold.value) {

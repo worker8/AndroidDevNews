@@ -37,7 +37,9 @@ import com.worker8.androiddevnews.util.createImageRequest
 import com.worker8.androiddevnews.util.toRelativeTimeString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 @Composable
 fun PodcastScreen(
     navController: NavHostController,
@@ -87,7 +89,7 @@ fun PodcastScreen(
 }
 
 @Composable
-fun ColumnScope.PlayerControl(
+fun PlayerControl(
     viewState: PodcastContract.ViewState,
     input: PodcastContract.Input,
     scope: CoroutineScope
@@ -141,6 +143,10 @@ fun ColumnScope.PlayerControl(
             contentDescription = null
         )
     }
+    LinearProgressIndicator(
+        progress = viewState.progress.value,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable
