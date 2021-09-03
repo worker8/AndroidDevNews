@@ -53,7 +53,7 @@ class TestServiceActivity : AppCompatActivity() {
         super.onStart()
         // Bind to LocalService
         Intent(this, PodcastService::class.java).also { intent ->
-            intent.putExtra("action", PodcastService.Action.Init("", "", "").name)
+            intent.putExtra("action", PodcastService.Action.Init.name)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(intent)
             } else {

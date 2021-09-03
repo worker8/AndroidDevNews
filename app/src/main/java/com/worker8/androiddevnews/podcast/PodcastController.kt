@@ -25,53 +25,33 @@ class PodcastController @Inject constructor() {
 //        val url = "https://blog.jetbrains.com/feed/"
 //        val url = "https://fragmentedpodcast.com/feed/"
         exoPlayer.addListener(object : Player.Listener {
-
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
                 viewState.isPlaying.value = isPlaying
             }
         })
-//        tickerFlow(Duration.seconds(1))
-//            .filter { viewState.isPlaying.value }
-//                ticker
         input.progress
             .onEach {
                 viewState.progress.value = it
-//                    exoPlayer.currentPosition.toFloat() / exoPlayer.duration.toFloat()
-//                Log.d(
-//                    "ddw",
-//                    "tick! exo time: ${viewState.progress.value}"
-//                )
             }
             .launchIn(scope)
         input.listPlayClick
             .filter {
-                viewState.currentPlayingEpisode != null && viewState.currentPlayingEpisode.value?.guid != it.guid
+                viewState.currentPlayingEpisode.value?.guid != it.guid
             }
             .onEach { viewState.currentPlayingEpisode.value = it }
             .map { it.enclosure.url.toString() }
             .onEach {
-                Log.d("ddw", "mp3: $it")
                 viewState.currentPlayingEpisode?.component1()?.apply {
-                    Log.d("ddw", "startServiceCallback 1 --> title: desc: $title: $description")
-                    input.startServiceCallback(title, iTunesInfo.subtitle, it)
+                    input.startServiceCallback(title, iTunesInfo.summary.take(50), it)
                 }
-//                val mediaItem = MediaItem.fromUri(it)
-//                exoPlayer.setMediaItem(mediaItem)
-//                exoPlayer.prepare()
-//                exoPlayer.play()
             }.launchIn(scope)
         merge(input.controlPlayClick,
             input.listPlayClick
                 .filter {
-                    viewState.currentPlayingEpisode != null && viewState.currentPlayingEpisode.value?.guid == it.guid
+                    viewState.currentPlayingEpisode.value?.guid == it.guid
                 })
             .onEach {
-//                if (exoPlayer.isPlaying) {
-//                    exoPlayer.pause()
-//                } else {
-//                    exoPlayer.play()
-//                }
                 Log.d("ddw", "Controller - control CLCIK")
             }
             .launchIn(scope)

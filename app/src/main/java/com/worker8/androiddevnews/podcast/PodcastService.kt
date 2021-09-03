@@ -86,42 +86,46 @@ class PodcastService : Service() {
         }.launchIn(scope)
     }
 
-    var notificationTitle: String? = null
-    var notificationDesc: String? = null
+    //    var notificationTitle: String? = null
+//    var notificationDesc: String? = null
+    private var initAction: Action.Init? = null
+    private val rewindAction by lazy {
+        Action.Rewind()
+    }
+    private val forwardAction by lazy {
+        Action.Forward()
+    }
+    private val playPauseAction by lazy {
+        Action.PlayPause()
+    }
+    private val closeAction by lazy {
+        Action.Close()
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
-//        Log.d("ddw", "[service] onStartCommand parcel: ${}")
-
-        exoPlayer.apply {
-            when (intent?.getStringExtra("action")) {
-                "Init" -> {
-                    val initActionParcel = intent.getParcelableExtra<Action.Init>(Parcel)
-                    val initAction = Action.Init(
-                        notificationTitle ?: "(no title1)",
-                        notificationDesc ?: "(no description1)",
-                        initActionParcel?.mp3Url ?: "",
-                    )
-                    notificationTitle = initActionParcel?.title ?: "(no title1)"
-                    notificationDesc = initActionParcel?.description ?: "(no desc1)"
-//                    notificationTitle = intent.getStringExtra("title")
-//                    notificationDesc = intent.getStringExtra("desc")
-                    initAction.call(exoPlayer, this@PodcastService)
-                }
-                Action.Forward.name -> {
-                    Action.Forward.call(exoPlayer, this@PodcastService)
-                }
-                Action.Rewind.name -> {
-                    Action.Rewind.call(exoPlayer, this@PodcastService)
-                }
-                Action.PlayPause.name -> {
-                    Action.PlayPause.call(exoPlayer, this@PodcastService)
-                }
-                Action.Close.name -> {
-                    Action.Close.call(exoPlayer, this@PodcastService)
-                }
+        when (intent?.getStringExtra("action")) {
+            Action.Init.name -> {
+                val initActionParcel = intent.getParcelableExtra<Action.Init>(Parcel)
+                initAction = Action.Init(
+                    initActionParcel?.title ?: "untitled",
+                    initActionParcel?.description ?: "",
+                    initActionParcel?.mp3Url ?: "",
+                )
+                initAction?.onClick(exoPlayer, this@PodcastService)
+            }
+            Action.Forward.name -> {
+                forwardAction.onClick(exoPlayer, this@PodcastService)
+            }
+            Action.Rewind.name -> {
+                rewindAction.onClick(exoPlayer, this@PodcastService)
+            }
+            Action.PlayPause.name -> {
+                playPauseAction.onClick(exoPlayer, this@PodcastService)
+            }
+            Action.Close.name -> {
+                closeAction.onClick(exoPlayer, this@PodcastService)
             }
         }
-
         val pendingIntent =
             //TODO - deeplink into podcast
             Intent(applicationContext, MainActivity::class.java).let { notificationIntent ->
@@ -155,15 +159,15 @@ class PodcastService : Service() {
 
             val notification = NotificationCompat.Builder(applicationContext, channelID)
                 .setStyle(mediaStyle)
-                .addAction(Action.Rewind.buildNotificationAction(this, exoPlayer.isPlaying))
-                .addAction(Action.PlayPause.buildNotificationAction(this, exoPlayer.isPlaying))
-                .addAction(Action.Forward.buildNotificationAction(this, exoPlayer.isPlaying))
-                .addAction(Action.Close.buildNotificationAction(this, exoPlayer.isPlaying))
-                .setContentTitle(notificationTitle)
-                .setContentText(notificationDesc)
+                .addAction(rewindAction.buildNotificationAction(this, exoPlayer.isPlaying))
+                .addAction(playPauseAction.buildNotificationAction(this, exoPlayer.isPlaying))
+                .addAction(forwardAction.buildNotificationAction(this, exoPlayer.isPlaying))
+                .addAction(closeAction.buildNotificationAction(this, exoPlayer.isPlaying))
+                .setContentTitle(initAction?.title)
+                .setContentText(initAction?.description)
                 .setSmallIcon(R.drawable.exo_icon_circular_play)
                 .setContentIntent(pendingIntent)
-                .setTicker(notificationTitle)
+                .setTicker(initAction?.title)
                 .setOnlyAlertOnce(true)
                 .build()
             startForeground(NotificationId, notification)
@@ -211,8 +215,7 @@ class PodcastService : Service() {
         @Parcelize
         data class Init(val title: String, val description: String, val mp3Url: String) : Action,
             Parcelable {
-            override val name = "Init"
-            override fun call(exoPlayer: SimpleExoPlayer, service: Service) {
+            override fun onClick(exoPlayer: SimpleExoPlayer, service: Service) {
                 val mediaItem = MediaItem.fromUri(mp3Url)
                 exoPlayer.apply {
                     setMediaItem(mediaItem)
@@ -225,11 +228,14 @@ class PodcastService : Service() {
                 context: Context,
                 isPlaying: Boolean
             ): NotificationCompat.Action? = null
+
+            companion object {
+                const val name = "Init"
+            }
         }
 
-        object Forward : Action {
-            override val name = "Forward"
-            override fun call(exoPlayer: SimpleExoPlayer, service: Service) {
+        class Forward : Action {
+            override fun onClick(exoPlayer: SimpleExoPlayer, service: Service) {
                 exoPlayer.seekTo(exoPlayer.currentPosition + 10000)
             }
 
@@ -243,11 +249,14 @@ class PodcastService : Service() {
                     context.makeServiceIntent(name)
                 ).build()
             }
+
+            companion object {
+                const val name = "Forward"
+            }
         }
 
-        object Rewind : Action {
-            override val name = "Rewind"
-            override fun call(exoPlayer: SimpleExoPlayer, service: Service) {
+        class Rewind : Action {
+            override fun onClick(exoPlayer: SimpleExoPlayer, service: Service) {
                 exoPlayer.seekTo(exoPlayer.currentPosition - 10000)
             }
 
@@ -261,11 +270,14 @@ class PodcastService : Service() {
                     context.makeServiceIntent(name)
                 ).build()
             }
+
+            companion object {
+                const val name = "Rewind"
+            }
         }
 
-        object PlayPause : Action {
-            override val name = "PlayPause"
-            override fun call(exoPlayer: SimpleExoPlayer, service: Service) {
+        class PlayPause : Action {
+            override fun onClick(exoPlayer: SimpleExoPlayer, service: Service) {
                 exoPlayer.playWhenReady = !exoPlayer.isPlaying
             }
 
@@ -283,11 +295,14 @@ class PodcastService : Service() {
                     context.makeServiceIntent(name)
                 ).build()
             }
+
+            companion object {
+                const val name = "PlayPause"
+            }
         }
 
-        object Close : Action {
-            override val name = "Close"
-            override fun call(
+        class Close : Action {
+            override fun onClick(
                 exoPlayer: SimpleExoPlayer,
                 service: Service
             ) {
@@ -309,10 +324,13 @@ class PodcastService : Service() {
                     context.makeServiceIntent(name)
                 ).build()
             }
+
+            companion object {
+                const val name = "Close"
+            }
         }
 
-        val name: String
-        fun call(exoPlayer: SimpleExoPlayer, service: Service)
+        fun onClick(exoPlayer: SimpleExoPlayer, service: Service)
         fun buildNotificationAction(
             context: Context,
             isPlaying: Boolean
