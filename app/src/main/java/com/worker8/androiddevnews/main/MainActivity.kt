@@ -31,10 +31,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.icosillion.podengine.models.Episode
 import com.icosillion.podengine.models.Podcast
 import com.kirkbushman.araw.models.Submission
-import com.worker8.androiddevnews.podcast.PodcastContract
-import com.worker8.androiddevnews.podcast.PodcastController
-import com.worker8.androiddevnews.podcast.PodcastScreen
-import com.worker8.androiddevnews.podcast.PodcastService
+import com.worker8.androiddevnews.podcast.*
 import com.worker8.androiddevnews.reddit.RedditController
 import com.worker8.androiddevnews.reddit.RedditScreen
 import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
@@ -66,7 +63,7 @@ class MainActivity : AppCompatActivity() {
 
     private var mBound: Boolean = false
     private lateinit var mService: PodcastService
-    val progressFlow = MutableSharedFlow<PodcastService.CurrentProgress>()
+    val progressFlow = MutableSharedFlow<PodcastService.CurrentProgress>(replay = 1)
     val isPlayingFlow = MutableSharedFlow<Boolean>()
 
     /** Defines callbacks for service binding, passed to bindService()  */
@@ -80,7 +77,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("ddw", "onServiceConnected")
             mService.progressFlow
                 .onEach {
-                    Log.d("ddw", "emit2: $it")
+                    Log.d("ccw", "emit2: $it")
                     progressFlow.emit(it)
                 }
                 .flowOn(Dispatchers.Main)
@@ -111,7 +108,7 @@ class MainActivity : AppCompatActivity() {
             override val startServiceCallback: (String, String, String, String) -> Unit =
                 { title, desc, mp3Url, iconUrl ->
                     Intent(this@MainActivity, PodcastService::class.java).also { _intent ->
-                        val initAction = PodcastService.Action.Init(
+                        val initAction = PodcastServiceAction.Init(
                             title = title,
                             description = desc,
                             mp3Url = mp3Url,

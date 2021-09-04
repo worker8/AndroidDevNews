@@ -34,6 +34,7 @@ class PodcastController @Inject constructor() {
             .launchIn(scope)
         input.update
             .onEach {
+                Log.d("ccw","[controller] input.update")
                 viewState.progress.value = it.progress
                 viewState.currentPlaying.value = it
             }

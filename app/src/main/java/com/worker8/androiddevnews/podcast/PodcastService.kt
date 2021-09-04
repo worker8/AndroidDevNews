@@ -7,21 +7,17 @@ import android.graphics.Color
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.os.Parcelable
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat.*
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.worker8.androiddevnews.R
 import com.worker8.androiddevnews.main.MainActivity
 import com.worker8.androiddevnews.util.tickerFlow
-import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.util.*
@@ -32,9 +28,15 @@ import kotlin.time.ExperimentalTime
 class PodcastService : Service() {
     private val channelName = "Podcast"
     private val channelID = "PODCAST_CHANNEL_ID"
+    private val bindedFlow = MutableSharedFlow<Unit>()
 
     // Binder given to clients
-    private val binder = LocalBinder()
+    private val _binder = LocalBinder()
+    private val binder: LocalBinder
+        get() {
+            Log.d("ccw", "---access binder----")
+            return _binder
+        }
     private val scope = CoroutineScope(Job())
 
     companion object {
@@ -109,6 +111,20 @@ class PodcastService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel(channelID, channelName)
         }
+        bindedFlow
+            .onEach {
+                Log.d("ccw","bindedFlow!")
+                val progress = exoPlayer.currentPosition.toFloat() / exoPlayer.duration.toFloat()
+                progressFlow.emit(
+                    CurrentProgress(
+                        title = initAction?.title ?: "",
+                        progress = progress,
+                        iconUrl = initAction?.iconUrl ?: ""
+                    )
+                )
+            }
+            .flowOn(Dispatchers.Main)
+            .launchIn(scope)
         tickerFlow(Duration.seconds(1))
             .filter { exoPlayer.isPlaying }
             .flowOn(Dispatchers.Main)
@@ -131,25 +147,25 @@ class PodcastService : Service() {
 
     //    var notificationTitle: String? = null
 //    var notificationDesc: String? = null
-    private var initAction: Action.Init? = null
+    private var initAction: PodcastServiceAction.Init? = null
     private val rewindAction by lazy {
-        Action.Rewind()
+        PodcastServiceAction.Rewind()
     }
     private val forwardAction by lazy {
-        Action.Forward()
+        PodcastServiceAction.Forward()
     }
     private val playPauseAction by lazy {
-        Action.PlayPause()
+        PodcastServiceAction.PlayPause()
     }
     private val closeAction by lazy {
-        Action.Close()
+        PodcastServiceAction.Close()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.getStringExtra("action")) {
-            Action.Init.name -> {
-                val initActionParcel = intent.getParcelableExtra<Action.Init>(Parcel)
-                initAction = Action.Init(
+            PodcastServiceAction.Init.name -> {
+                val initActionParcel = intent.getParcelableExtra<PodcastServiceAction.Init>(Parcel)
+                initAction = PodcastServiceAction.Init(
                     initActionParcel?.title ?: "untitled",
                     initActionParcel?.description ?: "",
                     initActionParcel?.mp3Url ?: "",
@@ -157,16 +173,16 @@ class PodcastService : Service() {
                 )
                 initAction?.onClick(exoPlayer, this@PodcastService)
             }
-            Action.Forward.name -> {
+            PodcastServiceAction.Forward.name -> {
                 forwardAction.onClick(exoPlayer, this@PodcastService)
             }
-            Action.Rewind.name -> {
+            PodcastServiceAction.Rewind.name -> {
                 rewindAction.onClick(exoPlayer, this@PodcastService)
             }
-            Action.PlayPause.name -> {
+            PodcastServiceAction.PlayPause.name -> {
                 playPauseAction.onClick(exoPlayer, this@PodcastService)
             }
-            Action.Close.name -> {
+            PodcastServiceAction.Close.name -> {
                 closeAction.onClick(exoPlayer, this@PodcastService)
             }
         }
@@ -233,7 +249,24 @@ class PodcastService : Service() {
         fun getService(): PodcastService = this@PodcastService
     }
 
+    override fun onUnbind(intent: Intent?): Boolean {
+        Log.d("ccw", "unbinded......")
+        return true
+    }
+
+    override fun onRebind(intent: Intent?) {
+        Log.d("ccw", "REBINDed-----")
+        super.onRebind(intent)
+        scope.launch {
+            bindedFlow.emit(Unit)
+        }
+    }
+
     override fun onBind(intent: Intent?): IBinder? {
+        Log.d("ccw", "onBinded!!")
+        scope.launch {
+            bindedFlow.emit(Unit)
+        }
 //        scope.launch(Dispatchers.Main) {
 //            val progress = exoPlayer.currentPosition.toFloat() / exoPlayer.duration.toFloat()
 //            progressFlow.emit(
@@ -267,147 +300,5 @@ class PodcastService : Service() {
         return channelId
     }
 
-    sealed interface Action {
-        @Parcelize
-        data class Init(
-            val title: String,
-            val description: String,
-            val mp3Url: String,
-            val iconUrl: String
-        ) : Action,
-            Parcelable {
-            override fun onClick(exoPlayer: SimpleExoPlayer, service: Service) {
-                val mediaItem = MediaItem.fromUri(mp3Url)
-                exoPlayer.apply {
-                    setMediaItem(mediaItem)
-                    prepare()
-                    play()
-                }
-            }
 
-            override fun buildNotificationAction(
-                context: Context,
-                isPlaying: Boolean
-            ): NotificationCompat.Action? = null
-
-            companion object {
-                const val name = "Init"
-            }
-        }
-
-        class Forward : Action {
-            override fun onClick(exoPlayer: SimpleExoPlayer, service: Service) {
-                exoPlayer.seekTo(exoPlayer.currentPosition + 10000)
-            }
-
-            override fun buildNotificationAction(
-                context: Context,
-                isPlaying: Boolean
-            ): NotificationCompat.Action? {
-                return NotificationCompat.Action.Builder(
-                    R.drawable.exo_icon_fastforward,
-                    name,
-                    context.makeServiceIntent(name)
-                ).build()
-            }
-
-            companion object {
-                const val name = "Forward"
-            }
-        }
-
-        class Rewind : Action {
-            override fun onClick(exoPlayer: SimpleExoPlayer, service: Service) {
-                exoPlayer.seekTo(exoPlayer.currentPosition - 10000)
-            }
-
-            override fun buildNotificationAction(
-                context: Context,
-                isPlaying: Boolean
-            ): NotificationCompat.Action? {
-                return NotificationCompat.Action.Builder(
-                    R.drawable.exo_icon_rewind,
-                    name,
-                    context.makeServiceIntent(name)
-                ).build()
-            }
-
-            companion object {
-                const val name = "Rewind"
-            }
-        }
-
-        class PlayPause : Action {
-            override fun onClick(exoPlayer: SimpleExoPlayer, service: Service) {
-                exoPlayer.playWhenReady = !exoPlayer.isPlaying
-            }
-
-            override fun buildNotificationAction(
-                context: Context,
-                isPlaying: Boolean
-            ): NotificationCompat.Action? {
-                return NotificationCompat.Action.Builder(
-                    if (isPlaying) {
-                        R.drawable.exo_icon_pause
-                    } else {
-                        R.drawable.exo_icon_play
-                    },
-                    name,
-                    context.makeServiceIntent(name)
-                ).build()
-            }
-
-            companion object {
-                const val name = "PlayPause"
-            }
-        }
-
-        class Close : Action {
-            override fun onClick(
-                exoPlayer: SimpleExoPlayer,
-                service: Service
-            ) {
-                exoPlayer.stop() // stop exoplayer
-                // TODO - is stopForeground & stopSelf both needed?
-                NotificationManagerCompat.from(service.applicationContext)
-                    .cancel(NotificationId)
-                service.stopForeground(true)
-                service.stopSelf()
-            }
-
-            override fun buildNotificationAction(
-                context: Context,
-                isPlaying: Boolean
-            ): NotificationCompat.Action? {
-                return NotificationCompat.Action.Builder(
-                    R.drawable.exo_icon_stop,
-                    name,
-                    context.makeServiceIntent(name)
-                ).build()
-            }
-
-            companion object {
-                const val name = "Close"
-            }
-        }
-
-        fun onClick(exoPlayer: SimpleExoPlayer, service: Service)
-        fun buildNotificationAction(
-            context: Context,
-            isPlaying: Boolean
-        ): NotificationCompat.Action?
-
-        fun Context.makeServiceIntent(action: String): PendingIntent {
-            Log.d("ddw", "makeServiceIntent - $action")
-            val intent = Intent(this, PodcastService::class.java)
-            intent.putExtra("action", action)
-            intent.action = action
-            return PendingIntent.getService(
-                applicationContext,
-                123,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE
-            )
-        }
-    }
 }
