@@ -66,7 +66,9 @@ fun PodcastScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(1f),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             if (viewState.podcast.value != null) {
                 PodcastList(
@@ -78,7 +80,7 @@ fun PodcastScreen(
                     scope
                 )
             } else {
-                Text("Nothing yet...")
+                CircularProgressIndicator()
             }
         }
 
