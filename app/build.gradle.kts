@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    compileSdk = 30
+    compileSdk = 31
     buildToolsVersion = "30.0.3"
 //    buildTypes {
 //        getByName("all") {
@@ -66,7 +66,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = version("compose")
+        kotlinCompilerExtensionVersion = "${version("compose")}"
     }
 }
 
@@ -82,7 +82,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:${version("compose")}")
     implementation("androidx.activity:activity-compose:${version("activityCompose")}")
     implementation("androidx.navigation:navigation-compose:${version("navCompose")}")
-    implementation("androidx.constraintlayout:constraintlayout-compose:${version("constraintLayoutcompose")}")
+    implementation("androidx.constraintlayout:constraintlayout-compose:${version("constraintLayoutCompose")}")
 
     /* reddit client */
     implementation("com.github.KirkBushman:ARAW:${version("ARAW")}")
@@ -92,21 +92,21 @@ dependencies {
 
 
     /* image loading libs */
-    implementation("io.coil-kt:coil-compose:${version("coil")}")
-    implementation("io.coil-kt:coil:${version("coil")}")
+    implementation("io.coil-kt:coil-compose:1.3.0")
+    implementation("io.coil-kt:coil:1.3.0")
     /* DI */
-    implementation("com.google.dagger:hilt-android:${version("hilt")}")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
-    kapt("com.google.dagger:hilt-android-compiler:${version("hilt")}")
+    implementation("com.google.dagger:hilt-android:2.38.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.2")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
+    kapt("com.google.dagger:hilt-android-compiler:2.38.1")
 
     /* exoplayer - for podcast */
     implementation("com.google.android.exoplayer:exoplayer:${version("exoplayer")}")
     implementation("com.google.android.exoplayer:exoplayer-core:${version("exoplayer")}")
 
     /* for notification compat */
-    implementation("androidx.media:media:1.1.0")
+    implementation("androidx.media:media:1.4.3")
 //    implementation("com.google.android.exoplayer:extension-mediasession:${version("exoplayer")}")
 //    implementation("com.google.android.exoplayer:exoplayer-ui:${version("exoplayer")}")
 
