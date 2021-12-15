@@ -37,7 +37,7 @@
         </activity>
         <activity
             android:name=".reddit.detail.RedditDetailActivity"
-            android:theme="@style/Theme.Transparent" />
+            android:theme="@style/Theme.SwipeToClose" />
     </application>
 
 </manifest>
