@@ -72,10 +72,10 @@ fun RedditList(
                         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(submission.url))
                         context.startActivity(browserIntent)
                     }) {
-                    context.startActivity(
-                        Intent(context, RedditDetailActivity::class.java).apply {
-                            putExtra(SubmissionKey, submission)
-                        })
+                    val intent = Intent(context, RedditDetailActivity::class.java).apply {
+                        putExtra(SubmissionKey, submission)
+                    }
+                    context.startActivity(intent)
                 }
                 Divider(
                     color = Color.LightGray,
@@ -84,7 +84,6 @@ fun RedditList(
             }
         )
     }
-//    }
 }
 
 @Composable

@@ -1,6 +1,7 @@
 package com.worker8.androiddevnews.reddit.detail
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.MaterialTheme
@@ -25,11 +26,13 @@ class RedditDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
             AndroidDevNewsTheme {
                 // A surface container using the 'background' color from the theme
-                SwipeToCloseBox(onCloseCallback = { finish() }) {
+                SwipeToCloseBox(onCloseCallback = {
+                    finish()
+                    window.decorView.alpha = 0f
+                }) {
                     Surface(color = MaterialTheme.colors.background) {
                         val redditDetailState =
                             remember { mutableStateOf(listOf<CommentData>()) }
@@ -42,12 +45,6 @@ class RedditDetailActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        overridePendingTransition(0, 0)
-
     }
 
     companion object {

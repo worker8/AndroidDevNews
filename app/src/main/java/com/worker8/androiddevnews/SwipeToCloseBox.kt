@@ -1,5 +1,6 @@
 package com.worker8.androiddevnews
 
+import android.view.View
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -41,12 +42,11 @@ fun SwipeToCloseBox(
     animationDuration: Int = 300,
     content: @Composable BoxScope.() -> Unit
 ) {
-    var offsetX = remember { mutableStateOf(0f) }
-    var screenWidth = remember { mutableStateOf(0) }
-    var isMoreThanThreshold = remember { mutableStateOf(false) }
+    val offsetX = remember { mutableStateOf(0f) }
+    val screenWidth = remember { mutableStateOf(0) }
+    val isMoreThanThreshold = remember { mutableStateOf(false) }
     val animationScope = rememberCoroutineScope()
     val animatableFloat = remember { Animatable(0f) }
-
     Box(
         Modifier
             .offset { IntOffset(animatableFloat.value.roundToInt(), 0) }
