@@ -1,6 +1,5 @@
 package com.worker8.androiddevnews
 
-import android.view.View
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween

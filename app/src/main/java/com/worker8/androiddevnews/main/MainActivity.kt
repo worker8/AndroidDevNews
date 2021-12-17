@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,6 +32,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.icosillion.podengine.models.Episode
 import com.icosillion.podengine.models.Podcast
 import com.kirkbushman.araw.models.Submission
+import com.worker8.androiddevnews.androidweekly.AndroidWeeklyScreen
 import com.worker8.androiddevnews.podcast.*
 import com.worker8.androiddevnews.reddit.RedditController
 import com.worker8.androiddevnews.reddit.RedditScreen
@@ -47,6 +49,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
+import com.worker8.androiddevnews.R
 
 
 @AndroidEntryPoint
@@ -202,6 +205,9 @@ fun MainScreen(
                     exoPlayer
                 )
             }
+            composable(BottomNavRoute.ANDROID_WEEKLY.toString()) {
+                AndroidWeeklyScreen()
+            }
         }
         BottomNavigationContent(navController = navController, homeScreenState = homeScreenState)
 //        Row(modifier = Modifier.weight(1f)) {
@@ -216,7 +222,8 @@ fun MainScreen(
 
 enum class BottomNavRoute {
     REDDIT,
-    PODCAST
+    PODCAST,
+    ANDROID_WEEKLY
 }
 
 @Composable
@@ -253,6 +260,27 @@ fun BottomNavigationContent(
             label = {
                 Text(
                     text = "Podcast", style = MaterialTheme.typography.caption.copy(
+                        color = Color.White
+                    )
+                )
+            },
+        )
+        BottomNavigationItem(
+            modifier = Modifier.background(MaterialTheme.colors.BottomNavBg),
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_android),
+                    contentDescription = null
+                )
+            },
+            selected = homeScreenState.value == BottomNavRoute.ANDROID_WEEKLY,
+            onClick = {
+                homeScreenState.value = BottomNavRoute.ANDROID_WEEKLY
+                navController.navigate(BottomNavRoute.ANDROID_WEEKLY.toString())
+            },
+            label = {
+                Text(
+                    text = "AndroidWeekly", style = MaterialTheme.typography.caption.copy(
                         color = Color.White
                     )
                 )
