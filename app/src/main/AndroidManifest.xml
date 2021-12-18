@@ -39,7 +39,7 @@
             android:name=".reddit.detail.RedditDetailActivity"
             android:theme="@style/Theme.SwipeToClose" />
         <activity
-            android:name=".androidweekly.AndroidWeeklyDetailActivity"
+            android:name=".androidweekly.WebViewActivity"
             android:theme="@style/Theme.SwipeToClose" />
     </application>
 
