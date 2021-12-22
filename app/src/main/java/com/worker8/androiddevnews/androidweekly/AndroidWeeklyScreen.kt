@@ -9,6 +9,6 @@ private const val LatestAndroidWeeklyUrl = "https://androidweekly.net/#latest-is
 @Composable
 fun AndroidWeeklyScreen() {
     AndroidView(factory = { context ->
-        createWebView(context, LatestAndroidWeeklyUrl)
+        createWebView(context, LatestAndroidWeeklyUrl, false)
     })
 }

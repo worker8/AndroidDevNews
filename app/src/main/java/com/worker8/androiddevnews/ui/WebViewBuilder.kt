@@ -26,7 +26,12 @@ import com.worker8.androiddevnews.androidweekly.WebViewActivity
 import com.worker8.androiddevnews.util.getActivity
 import java.net.URL
 
-fun createWebView(context: Context, linkUrl: String, onPageFinished: ((String) -> Unit)? = null) =
+fun createWebView(
+    context: Context,
+    linkUrl: String,
+    shouldRedirectInSamePage: Boolean,
+    onPageFinished: ((String) -> Unit)? = null
+) =
     WebView(context).apply {
         settings.apply {
             builtInZoomControls = true
@@ -52,14 +57,20 @@ fun createWebView(context: Context, linkUrl: String, onPageFinished: ((String) -
                 view: WebView?,
                 url: String?
             ): Boolean {
-                if (url.isNullOrBlank()) {
-                    return false
+                if (shouldRedirectInSamePage) {
+                    url?.let {
+                        view?.loadUrl(it)
+                    }
+                } else {
+                    if (url.isNullOrBlank()) {
+                        return false
+                    }
+                    val intent = Intent(context, WebViewActivity::class.java).apply {
+                        putExtra(WebViewActivity.UrlKey, url)
+                    }
+                    context.startActivity(intent)
                 }
-                val intent = Intent(context, WebViewActivity::class.java).apply {
-                    putExtra(WebViewActivity.UrlKey, url)
-                }
-                context.startActivity(intent)
-                return true
+                return false
             }
         }
         loadUrl(linkUrl)
@@ -74,7 +85,10 @@ fun WebViewScreen(linkUrl: String) {
             .fillMaxHeight()
             .fillMaxWidth()
     ) {
-        TopAppBar {
+        TopAppBar(
+            backgroundColor = MaterialTheme.colors.background,
+            contentColor = MaterialTheme.colors.onBackground
+        ) {
             Icon(
                 imageVector = Icons.Outlined.Close,
                 contentDescription = null,
@@ -113,7 +127,7 @@ fun WebViewScreen(linkUrl: String) {
         }
         Surface(color = MaterialTheme.colors.background) {
             AndroidView(factory = { context ->
-                createWebView(context, linkUrl, onPageFinished = {
+                createWebView(context, linkUrl, true, onPageFinished = {
                     pageTitle.value = it
                 })
             })

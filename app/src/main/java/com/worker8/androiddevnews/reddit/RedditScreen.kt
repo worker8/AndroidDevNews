@@ -19,6 +19,7 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.kirkbushman.araw.models.Submission
+import com.worker8.androiddevnews.androidweekly.WebViewActivity
 import com.worker8.androiddevnews.reddit.detail.RedditDetailActivity
 import com.worker8.androiddevnews.reddit.detail.RedditDetailActivity.Companion.SubmissionKey
 import com.worker8.androiddevnews.reddit.shared.RedditContentCard
@@ -77,16 +78,18 @@ fun RedditList(
                     RedditContentCard(
                         submission = submission,
                         truncation = true,
-                        onLinkClick = { submission ->
-                            val browserIntent =
-                                Intent(Intent.ACTION_VIEW, Uri.parse(submission.url))
-                            context.startActivity(browserIntent)
-                        }) {
-                        val intent = Intent(context, RedditDetailActivity::class.java).apply {
-                            putExtra(SubmissionKey, submission)
-                        }
-                        context.startActivity(intent)
-                    }
+                        onLinkClick = { _submission ->
+                            val intent = Intent(context, WebViewActivity::class.java).apply {
+                                putExtra(WebViewActivity.UrlKey, _submission.url)
+                            }
+                            context.startActivity(intent)
+                        },
+                        onClick = {
+                            val intent = Intent(context, RedditDetailActivity::class.java).apply {
+                                putExtra(SubmissionKey, submission)
+                            }
+                            context.startActivity(intent)
+                        })
                     Divider(
                         color = MaterialTheme.colors.Neutral02,
                         thickness = 1.dp,
