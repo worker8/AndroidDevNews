@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val input = object : PodcastContract.Input {
-            override val listPlayClick = MutableSharedFlow<Episode>()
+            override val listPlayClick = MutableSharedFlow<PodcastContract.EpisodePair>()
             override val controlPlayClick = MutableSharedFlow<Unit>()
             override val isPlaying = isPlayingFlow
             override val update = progressFlow
@@ -169,15 +169,13 @@ fun MainScreen(
     val redditState = remember { mutableStateOf(listOf<Submission>()) }
     val redditListState = rememberLazyListState()
 
-//    val podcastState =
-//    val podcastListState =
-
     val viewState = object : PodcastContract.ViewState {
-        override val podcast = remember { mutableStateOf<Podcast?>(null) }
+        override val episodePairs =
+            remember { mutableStateOf(listOf<PodcastContract.EpisodePair>()) }
         override val progress = remember { mutableStateOf(0f) }
         override val currentPlaying =
             remember { mutableStateOf<PodcastService.CurrentProgress?>(null) }
-        override val currentPlayingEpisode = remember { mutableStateOf<Episode?>(null) }
+        override val currentPlayingEpisode = remember { mutableStateOf<PodcastContract.EpisodePair?>(null) }
         override val isPlaying = remember { mutableStateOf(false) }
         override val lazyListState = rememberLazyListState()
     }

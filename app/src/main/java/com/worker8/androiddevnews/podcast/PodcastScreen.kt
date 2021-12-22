@@ -29,8 +29,6 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import coil.imageLoader
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.icosillion.podengine.models.Episode
-import com.icosillion.podengine.models.Podcast
 import com.worker8.androiddevnews.ui.HtmlView
 import com.worker8.androiddevnews.ui.theme.*
 import com.worker8.androiddevnews.util.DurationParser
@@ -71,9 +69,9 @@ fun PodcastScreen(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (viewState.podcast.value != null) {
+            if (viewState.episodePairs.value.isNotEmpty()) {
                 PodcastList(
-                    viewState.podcast,
+                    viewState.episodePairs,
                     viewState.currentPlayingEpisode,
                     viewState.isPlaying,
                     viewState.lazyListState,
@@ -112,10 +110,11 @@ fun PlayerControl(
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        viewState.podcast.value?.imageURL?.let { _url ->
+        //TODO: fix podcast.value
+        viewState.currentPlayingEpisode.value?.podcastImageUrl?.let { _url ->
             Image(
                 painter = rememberImagePainter(
-                    createImageRequest(_url.toString()),
+                    createImageRequest(_url),
                     LocalContext.current.imageLoader
                 ),
                 contentDescription = null,
@@ -154,43 +153,44 @@ fun PlayerControl(
 
 @Composable
 fun PodcastList(
-    podcastState: State<Podcast?>,
-    currentPlayingEpisode: State<Episode?>,
+    episodePairsState: State<List<PodcastContract.EpisodePair>>,
+    currentPlayingEpisode: State<PodcastContract.EpisodePair?>,
     isPlaying: State<Boolean>,
     lazyListState: LazyListState,
     input: PodcastContract.Input,
     coroutineScope: CoroutineScope
 ) {
-    val podcast = podcastState.value!!
+    val episodePairs = episodePairsState.value
     LazyColumn(
         modifier = Modifier.background(MaterialTheme.colors.background),
         state = lazyListState
     ) {
         items(
-            count = podcast.episodes.size,
+            count = episodePairs.size,
+            key = { index -> episodePairs[index].episode.guid },
             itemContent = { index ->
-                val episode = podcast.episodes[index]
+                val episode = episodePairs[index].episode
+                val podcastImageUrl = episodePairs[index].podcastImageUrl
+                val podcastTitle = episodePairs[index].podcastTitle
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        podcast.imageURL?.let { _url ->
-                            Image(
-                                painter = rememberImagePainter(
-                                    createImageRequest(_url.toString()),
-                                    LocalContext.current.imageLoader
-                                ),
-                                contentDescription = null,
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .width(40.dp)
-                                    .height(40.dp)
-                            )
-                        }
+                        Image(
+                            painter = rememberImagePainter(
+                                createImageRequest(podcastImageUrl),
+                                LocalContext.current.imageLoader
+                            ),
+                            contentDescription = null,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .width(40.dp)
+                                .height(40.dp)
+                        )
                         Column(
                             verticalArrangement = Arrangement.Center,
                             modifier = Modifier.padding(horizontal = 10.dp)
                         ) {
                             Text(
-                                text = podcast.title ?: "",
+                                text = podcastTitle,
                                 style = MaterialTheme.typography.subtitle1.copy(color = MaterialTheme.colors.Neutral09),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -221,13 +221,11 @@ fun PodcastList(
                     )
                     PlayButton(
                         duration = episode.iTunesInfo.duration,
-                        isPlaying = currentPlayingEpisode.value?.guid == episode.guid && isPlaying.value
+                        isPlaying = currentPlayingEpisode.value?.episode?.guid == episode.guid && isPlaying.value
                     ) {
                         Log.d("ddw", "${episode.title}: ${episode.enclosure.url}")
                         coroutineScope.launch {
-//                            Log.d("ddw", "[${System.identityHashCode(input.playSharedFlow)}] EMIT!")
-                            //episode.enclosure.url.toString()
-                            input.listPlayClick.emit(episode)
+                            input.listPlayClick.emit(episodePairs[index])
                         }
                     }
                     Divider(

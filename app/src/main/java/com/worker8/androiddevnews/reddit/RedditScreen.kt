@@ -70,6 +70,7 @@ fun RedditList(
         ) {
             items(
                 count = state.value.count(),
+                key = { index -> state.value[index].id },
                 itemContent = { index ->
                     val submission = state.value[index]
 

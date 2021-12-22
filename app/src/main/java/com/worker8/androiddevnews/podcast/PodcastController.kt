@@ -8,7 +8,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import java.net.URL
+import java.util.*
 import javax.inject.Inject
+import kotlin.Comparator
 import kotlin.time.ExperimentalTime
 
 
@@ -41,31 +43,56 @@ class PodcastController @Inject constructor() {
             .launchIn(scope)
         input.listPlayClick
             .filter {
-                viewState.currentPlayingEpisode.value?.guid != it.guid
+                viewState.currentPlayingEpisode.value?.episode?.guid != it.episode.guid
             }
             .onEach { viewState.currentPlayingEpisode.value = it }
-            .onEach { _episode ->
+            .onEach { _episodePair ->
+                val episode = _episodePair.episode
                 input.startServiceCallback(
-                    _episode.title,
-                    _episode.iTunesInfo.summary.take(50),
-                    _episode.enclosure.url.toString(),
-                    viewState.podcast.value?.imageURL.toString()
+                    episode.title,
+                    episode.iTunesInfo.summary.take(50),
+                    episode.enclosure.url.toString(),
+                    _episodePair.podcastImageUrl
                 )
             }.launchIn(scope)
         merge(input.controlPlayClick,
             input.listPlayClick
                 .filter {
-                    viewState.currentPlayingEpisode.value?.guid == it.guid
+                    viewState.currentPlayingEpisode.value?.episode?.guid == it.episode.guid
                 })
             .onEach {
-                Log.d("ddw", "Controller - control CLCIK")
+                Log.d("ddw", "Controller - control CLICK")
             }
             .launchIn(scope)
         flow<Unit> {
             withContext(Dispatchers.IO) {
                 try {
-                    viewState.podcast.value = Podcast(URL("https://feeds.simplecast.com/LpAGSLnY"))
-//                    viewState.podcast.value = Podcast(URL("https://adbackstage.libsyn.com/rss"))
+                    val comparator =
+                        Comparator<PodcastContract.EpisodePair> { a, b ->
+                            if (a.episode.pubDate > b.episode.pubDate) {
+                                -1
+                            } else {
+                                1
+                            }
+                        }
+                    val treeSet = TreeSet(comparator)
+                    val podcastList = listOf(
+                        URL("https://feeds.simplecast.com/LpAGSLnY"),
+                        URL("https://adbackstage.libsyn.com/rss")
+                    )
+                    podcastList.forEach { url ->
+                        val podcast = Podcast(url)
+                        podcast.episodes.forEach {
+                            treeSet.add(
+                                PodcastContract.EpisodePair(
+                                    it,
+                                    podcast.imageURL.toString(),
+                                    podcast.title
+                                )
+                            )
+                        }
+                    }
+                    viewState.episodePairs.value = treeSet.toList()
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

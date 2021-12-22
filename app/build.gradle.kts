@@ -47,7 +47,7 @@ android {
                 "RedditClientId",
                 "\"${Secrets.redditClientId}\""
             )
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -95,11 +95,11 @@ dependencies {
     implementation("io.coil-kt:coil-compose:1.3.0")
     implementation("io.coil-kt:coil:1.3.0")
     /* DI */
-    implementation("com.google.dagger:hilt-android:2.38.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.2")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
     kapt("com.google.dagger:hilt-android-compiler:2.38.1")
+    implementation("com.google.dagger:hilt-android:2.38.1")
 
     /* exoplayer - for podcast */
     implementation("com.google.android.exoplayer:exoplayer:${version("exoplayer")}")

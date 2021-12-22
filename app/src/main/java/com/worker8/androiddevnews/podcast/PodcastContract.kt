@@ -3,12 +3,11 @@ package com.worker8.androiddevnews.podcast
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.MutableState
 import com.icosillion.podengine.models.Episode
-import com.icosillion.podengine.models.Podcast
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 class PodcastContract {
     interface Input {
-        val listPlayClick: MutableSharedFlow<Episode>
+        val listPlayClick: MutableSharedFlow<EpisodePair>
         val isPlaying: MutableSharedFlow<Boolean>
         val controlPlayClick: MutableSharedFlow<Unit>
         val update: MutableSharedFlow<PodcastService.CurrentProgress>
@@ -16,12 +15,15 @@ class PodcastContract {
     }
 
     interface ViewState {
-        val podcast: MutableState<Podcast?>
+        val episodePairs: MutableState<List<EpisodePair>>
         val progress: MutableState<Float>
+
         // TODO: naming is bad
         val currentPlaying: MutableState<PodcastService.CurrentProgress?>
-        val currentPlayingEpisode: MutableState<Episode?>
+        val currentPlayingEpisode: MutableState<EpisodePair?>
         val isPlaying: MutableState<Boolean>
         val lazyListState: LazyListState
     }
+
+    data class EpisodePair(val episode: Episode, val podcastImageUrl: String, val podcastTitle: String)
 }

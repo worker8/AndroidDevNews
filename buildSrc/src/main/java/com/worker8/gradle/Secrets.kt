@@ -5,8 +5,20 @@ import java.util.*
 
 object Secrets {
     private const val REDDIT_CLIENT_ID = "reddit_client_id"
+    private const val SIGNING_ALIAS = "signing_alias"
+    private const val SIGNING_PASSWORD = "signing_password"
+    private const val SIGNING_KEY_PATH = "signing_key_path"
     val redditClientId: String by lazy {
         secretsProperties().getProperty(REDDIT_CLIENT_ID)
+    }
+    val signingPassword: String by lazy {
+        secretsProperties().getProperty(SIGNING_PASSWORD)
+    }
+    val signingAlias: String by lazy {
+        secretsProperties().getProperty(SIGNING_ALIAS)
+    }
+    val signingPath: String by lazy {
+        secretsProperties().getProperty(SIGNING_KEY_PATH)
     }
 
     private fun secretsProperties(): Properties {
