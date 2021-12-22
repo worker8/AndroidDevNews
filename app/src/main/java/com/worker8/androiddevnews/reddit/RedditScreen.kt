@@ -88,8 +88,9 @@ fun RedditList(
                         context.startActivity(intent)
                     }
                     Divider(
-                        color = Color.LightGray,
-                        thickness = 1.dp
+                        color = MaterialTheme.colors.Neutral02,
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
             )

@@ -231,7 +231,7 @@ fun PodcastList(
                     Divider(
                         color = MaterialTheme.colors.Neutral02,
                         thickness = 1.dp,
-                        modifier = Modifier.padding(top = 16.dp)
+                        modifier = Modifier.padding(top = 32.dp)
                     )
                 }
 

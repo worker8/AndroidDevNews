@@ -56,9 +56,9 @@ fun HtmlView(
 
     // Displays the TextView on the screen and updates with the HTML description when inflated
     // Updates to htmlDescription will make AndroidView recompose and update the text
-
-    val truncated = if (truncation && styledHtml.length > 300) {
-        styledHtml.substring(0, 300) + "..."
+    val textLimit = 120
+    val truncated = if (truncation && styledHtml.length > textLimit) {
+        styledHtml.substring(0, textLimit) + "..."
     } else {
         styledHtml
     }
