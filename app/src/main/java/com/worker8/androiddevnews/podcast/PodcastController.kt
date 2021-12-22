@@ -77,8 +77,9 @@ class PodcastController @Inject constructor() {
                         }
                     val treeSet = TreeSet(comparator)
                     val podcastList = listOf(
-                        URL("https://feeds.simplecast.com/LpAGSLnY"),
-                        URL("https://adbackstage.libsyn.com/rss")
+                        URL("https://feeds.simplecast.com/LpAGSLnY"), // fragmented podcast
+                        URL("https://adbackstage.libsyn.com/rss"), // android backstage
+                        URL("https://nowinandroid.libsyn.com/rss") // now in android
                     )
                     podcastList.forEach { url ->
                         val podcast = Podcast(url)

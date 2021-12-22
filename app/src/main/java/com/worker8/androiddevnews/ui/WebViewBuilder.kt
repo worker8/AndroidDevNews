@@ -70,7 +70,7 @@ fun createWebView(
                     }
                     context.startActivity(intent)
                 }
-                return false
+                return true
             }
         }
         loadUrl(linkUrl)
