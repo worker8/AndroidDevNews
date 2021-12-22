@@ -33,6 +33,7 @@ import com.icosillion.podengine.models.Episode
 import com.icosillion.podengine.models.Podcast
 import com.worker8.androiddevnews.ui.HtmlView
 import com.worker8.androiddevnews.ui.theme.*
+import com.worker8.androiddevnews.util.DurationParser
 import com.worker8.androiddevnews.util.createImageRequest
 import com.worker8.androiddevnews.util.toRelativeTimeString
 import kotlinx.coroutines.CoroutineScope
@@ -267,15 +268,8 @@ fun PlayButton(duration: String, isPlaying: Boolean, callback: () -> Unit) {
                 contentDescription = "toggle-play-or-pause",
                 tint = buttonColor
             )
-            val durationList = duration.split(":")
-            val hour = if (durationList.first() != "00") {
-                durationList.first().toInt().toString() + "h "
-            } else {
-                ""
-            }
-            val min = durationList[1] + " mins"
             Text(
-                text = "$hour$min",
+                text = DurationParser.parse(duration),
                 style = MaterialTheme.typography.caption.copy(
                     color = MaterialTheme.colors.onBackground,
                     fontWeight = FontWeight.Bold

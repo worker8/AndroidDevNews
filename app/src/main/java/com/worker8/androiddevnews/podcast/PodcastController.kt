@@ -34,7 +34,7 @@ class PodcastController @Inject constructor() {
             .launchIn(scope)
         input.update
             .onEach {
-                Log.d("ccw","[controller] input.update")
+                Log.d("ccw", "[controller] input.update")
                 viewState.progress.value = it.progress
                 viewState.currentPlaying.value = it
             }
@@ -65,6 +65,7 @@ class PodcastController @Inject constructor() {
             withContext(Dispatchers.IO) {
                 try {
                     viewState.podcast.value = Podcast(URL("https://feeds.simplecast.com/LpAGSLnY"))
+//                    viewState.podcast.value = Podcast(URL("https://adbackstage.libsyn.com/rss"))
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

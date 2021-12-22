@@ -1,7 +1,6 @@
 package com.worker8.androiddevnews.reddit.detail
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.MaterialTheme
@@ -10,7 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.models.base.CommentData
-import com.worker8.androiddevnews.R
 import com.worker8.androiddevnews.SwipeToCloseBox
 import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
 import dagger.hilt.android.AndroidEntryPoint
