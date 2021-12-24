@@ -13,7 +13,7 @@ import java.nio.charset.Charset
 
 @Composable
 fun KotlinWeeklyScreen() {
-    val kotlinWeeklyUrl =
+    val kotlinWeeklyRss =
         "https://us12.campaign-archive.com/feed?u=f39692e245b94f7fb693b6d82&id=93b2272cb6"
     val parser = Parser.Builder()
         .context(LocalContext.current)
@@ -21,9 +21,6 @@ fun KotlinWeeklyScreen() {
         .cacheExpirationMillis(24L * 60L * 60L * 100L) // one day
         .build()
     val latestIssueLink = remember { mutableStateOf<String?>(null) }
-    latestIssueLink.value?.let {
-
-    }
 
     if (latestIssueLink.value != null) {
         AndroidView(factory = { context ->
@@ -35,12 +32,10 @@ fun KotlinWeeklyScreen() {
 
     LaunchedEffect(Unit) {
         try {
-            val channel: Channel = parser.getChannel(kotlinWeeklyUrl)
+            val channel = parser.getChannel(kotlinWeeklyRss)
             latestIssueLink.value = channel.articles.first().link
-            // Do something with your data
         } catch (e: Exception) {
             e.printStackTrace()
-            // Handle the exception
         }
     }
 }
