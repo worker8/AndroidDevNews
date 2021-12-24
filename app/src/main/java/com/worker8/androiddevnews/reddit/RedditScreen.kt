@@ -1,7 +1,6 @@
 package com.worker8.androiddevnews.reddit
 
 import android.content.Intent
-import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,17 +11,16 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.kirkbushman.araw.models.Submission
-import com.worker8.androiddevnews.androidweekly.WebViewActivity
 import com.worker8.androiddevnews.reddit.detail.RedditDetailActivity
 import com.worker8.androiddevnews.reddit.detail.RedditDetailActivity.Companion.SubmissionKey
 import com.worker8.androiddevnews.reddit.shared.RedditContentCard
+import com.worker8.androiddevnews.ui.WebViewActivity
 import com.worker8.androiddevnews.ui.theme.Neutral02
 import kotlinx.coroutines.cancel
 

@@ -29,10 +29,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.icosillion.podengine.models.Episode
-import com.icosillion.podengine.models.Podcast
 import com.kirkbushman.araw.models.Submission
-import com.worker8.androiddevnews.androidweekly.AndroidWeeklyScreen
 import com.worker8.androiddevnews.podcast.*
 import com.worker8.androiddevnews.reddit.RedditController
 import com.worker8.androiddevnews.reddit.RedditScreen
@@ -50,6 +47,8 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 import com.worker8.androiddevnews.R
+import com.worker8.androiddevnews.newsletter.AndroidWeeklyScreen
+import com.worker8.androiddevnews.newsletter.NewsletterScreen
 
 
 @AndroidEntryPoint
@@ -204,7 +203,7 @@ fun MainScreen(
                 )
             }
             composable(BottomNavRoute.ANDROID_WEEKLY.toString()) {
-                AndroidWeeklyScreen()
+                NewsletterScreen()
             }
         }
         BottomNavigationContent(navController = navController, homeScreenState = homeScreenState)

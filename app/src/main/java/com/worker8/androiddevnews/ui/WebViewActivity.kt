@@ -1,9 +1,8 @@
-package com.worker8.androiddevnews.androidweekly
+package com.worker8.androiddevnews.ui
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import com.worker8.androiddevnews.ui.WebViewScreen
 import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
 import dagger.hilt.android.AndroidEntryPoint
 

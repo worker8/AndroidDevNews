@@ -1,4 +1,4 @@
-package com.worker8.androiddevnews.androidweekly
+package com.worker8.androiddevnews.newsletter
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.viewinterop.AndroidView

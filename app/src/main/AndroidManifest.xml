@@ -27,7 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".podcast.ActionReceiver" />
 
         <activity android:name=".TestServiceActivity">
             <!--            <intent-filter>-->
@@ -39,7 +38,7 @@
             android:name=".reddit.detail.RedditDetailActivity"
             android:theme="@style/Theme.SwipeToClose" />
         <activity
-            android:name=".androidweekly.WebViewActivity"
+            android:name=".ui.WebViewActivity"
             android:theme="@style/Theme.SwipeToClose" />
     </application>
 
