@@ -116,7 +116,7 @@ fun WebViewScreen(linkUrl: String) {
                         modifier = Modifier
                             .alpha(0.8f)
                             .padding(bottom = 2.dp, end = 16.dp),
-                        fontSize = 8.sp,
+                        fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
