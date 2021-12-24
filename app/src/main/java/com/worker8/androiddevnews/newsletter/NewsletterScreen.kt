@@ -1,19 +1,14 @@
 package com.worker8.androiddevnews.newsletter
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.material.ButtonDefaults.buttonColors
-import androidx.compose.material.SnackbarDefaults.backgroundColor
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.unit.dp
-import com.worker8.androiddevnews.ui.theme.Neutral02
 
 private enum class WeeklyTab(val text: String) {
     AndroidWeekly("Android Weekly"),
@@ -49,7 +44,7 @@ fun NewsletterScreen() {
                 AndroidWeeklyScreen()
             }
             WeeklyTab.KotlinWeekly -> {
-                Text("Kotlin Weekly  ..... in construction")
+                KotlinWeeklyScreen()
             }
         }
     }
