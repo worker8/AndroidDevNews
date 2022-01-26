@@ -50,7 +50,7 @@ class PodcastController @Inject constructor() {
                 val episode = _episodePair.episode
                 input.startServiceCallback(
                     episode.title,
-                    episode.iTunesInfo.summary.take(50),
+                    episode.iTunesInfo.summary?.take(50) ?: "",
                     episode.enclosure.url.toString(),
                     _episodePair.podcastImageUrl
                 )
