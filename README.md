@@ -1,17 +1,32 @@
-## Development
+### Features
+Currently this app is still under heavy development. The following features are implemented as of now:
+
+
+### r/AndroidDev Subreddit
+| Main | Comments |
+| - | - |
+| <img src="https://user-images.githubusercontent.com/1988156/151374120-b0b51876-a985-44dd-9503-bb8d40343b25.png" width="250px" /> | <img src="https://user-images.githubusercontent.com/1988156/151373905-980fcede-cc63-45f5-9b40-6cb266abace2.png" width="250px" /> |
+
+### Podcast
+<img src="https://user-images.githubusercontent.com/1988156/151373909-584e4222-382c-4194-87bf-62b440a2d3d0.png" width="250px" />
+- Now in Android
+- Fragmented Podcast
+
+### Newsletter
+| AndroidWeekly | KotlinWeekly |
+| - | - |
+| <img src="https://user-images.githubusercontent.com/1988156/151373911-32c65b08-faf3-40e7-8f03-a4e466a654f5.png" width="250px" /> | <img src="https://user-images.githubusercontent.com/1988156/151373916-52c67f9b-faa6-4db1-8cad-95a1a53eda35.png" width="250px" /> |
+
+### Technology Stack
+#### Compose
+This application is written fully with Jetpack Compose, with some compatibility AndroidView, e.g. WebView.
+
+#### To be filled in
+👷‍♀️ 🏗️ 👷‍♂️
+
+### Development
 Prepare `secrets.properties` at the root of the project with reddit's client id, the content of the file should look like this:
 
 ```
 reddit_client_id=abcdG9Lt4-ABCg
 ```
-
-## Screenshot
-|Normal Mode| | |
-|-|-|-|
-|<img src="https://user-images.githubusercontent.com/1988156/143842708-0682ba8f-0011-4389-a307-6c3cfc369584.png" width="300px" />|<img src="https://user-images.githubusercontent.com/1988156/143842719-d3ff59e7-1938-4238-b6a9-73540f7b0b08.png" width="300px" />|<img src="https://user-images.githubusercontent.com/1988156/143842723-5b9fcbb6-24e0-4419-89bc-d5e8d2084d9c.png" width="300px" />|
-
-
-|Night Mode| | |
-|-|-|-|
-|<img src="https://user-images.githubusercontent.com/1988156/143842104-68b2f7fd-77c4-4fda-9297-15e027bca399.png" width="300px" />|<img src="https://user-images.githubusercontent.com/1988156/143842118-98f31ebf-206a-4a83-a9c2-420eaa99923e.png" width="300px" />|<img src="https://user-images.githubusercontent.com/1988156/143842124-11ee1119-5ab1-4054-a076-7366b0b5a653.png" width="300px" />|
-
