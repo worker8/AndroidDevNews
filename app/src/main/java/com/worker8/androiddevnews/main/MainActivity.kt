@@ -28,30 +28,28 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.ExoPlayer
 import com.kirkbushman.araw.models.Submission
+import com.worker8.androiddevnews.R
+import com.worker8.androiddevnews.newsletter.NewsletterScreen
 import com.worker8.androiddevnews.podcast.*
 import com.worker8.androiddevnews.reddit.RedditController
 import com.worker8.androiddevnews.reddit.RedditScreen
 import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
 import com.worker8.androiddevnews.ui.theme.BottomNavBg
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
-import com.worker8.androiddevnews.R
-import com.worker8.androiddevnews.newsletter.AndroidWeeklyScreen
-import com.worker8.androiddevnews.newsletter.NewsletterScreen
 
 
+@ExperimentalTime
 @AndroidEntryPoint
+@OptIn(ExperimentalMaterialApi::class)
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var redditController: RedditController
@@ -59,14 +57,11 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var podcastController: PodcastController
 
-    @Inject
-    lateinit var simpleExoPlayer: SimpleExoPlayer
-
-
     private var mBound: Boolean = false
     private lateinit var mService: PodcastService
     val progressFlow = MutableSharedFlow<PodcastService.CurrentProgress>(replay = 1)
     val isPlayingFlow = MutableSharedFlow<Boolean>()
+    val exoPlayerFlow = MutableSharedFlow<ExoPlayer>(replay = 1)
 
     /** Defines callbacks for service binding, passed to bindService()  */
     private val connection = object : ServiceConnection {
@@ -77,6 +72,9 @@ class MainActivity : AppCompatActivity() {
             mService = binder.getService()
             mBound = true
             Log.d("ddw", "onServiceConnected")
+            scope.launch {
+                exoPlayerFlow.emit(mService.exoPlayer)
+            }
             mService.progressFlow
                 .onEach {
                     Log.d("ccw", "emit2: $it")
@@ -98,7 +96,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @ExperimentalTime
+    @OptIn(ExperimentalTime::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -126,6 +124,7 @@ class MainActivity : AppCompatActivity() {
 //                        bindService(_intent, connection, Context.BIND_NOT_FOREGROUND)
                     }
                 }
+            override val exoPlayer = exoPlayerFlow
         }
         setContent {
             AndroidDevNewsTheme {
@@ -135,7 +134,6 @@ class MainActivity : AppCompatActivity() {
                         redditController = redditController,
                         podcastController = podcastController,
                         input = input,
-                        exoPlayer = simpleExoPlayer
                     )
                 }
             }
@@ -156,13 +154,13 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @ExperimentalTime
 @Composable
 fun MainScreen(
     redditController: RedditController,
     podcastController: PodcastController,
     input: PodcastContract.Input,
-    exoPlayer: SimpleExoPlayer
 ) {
     val homeScreenState = remember { mutableStateOf(BottomNavRoute.REDDIT) }
     val redditState = remember { mutableStateOf(listOf<Submission>()) }
@@ -174,9 +172,12 @@ fun MainScreen(
         override val progress = remember { mutableStateOf(0f) }
         override val currentPlaying =
             remember { mutableStateOf<PodcastService.CurrentProgress?>(null) }
-        override val currentPlayingEpisode = remember { mutableStateOf<PodcastContract.EpisodePair?>(null) }
+        override val currentPlayingEpisode =
+            remember { mutableStateOf<PodcastContract.EpisodePair?>(null) }
         override val isPlaying = remember { mutableStateOf(false) }
         override val lazyListState = rememberLazyListState()
+        override val bottomSheetControlIsOpen =
+            remember { mutableStateOf(ModalBottomSheetValue.Hidden) }
     }
     val navController = rememberNavController()
     Column {
@@ -199,7 +200,6 @@ fun MainScreen(
                     podcastController,
                     viewState,
                     input,
-                    exoPlayer
                 )
             }
             composable(BottomNavRoute.ANDROID_WEEKLY.toString()) {
@@ -277,7 +277,7 @@ fun BottomNavigationContent(
             },
             label = {
                 Text(
-                    text = "AndroidWeekly", style = MaterialTheme.typography.caption.copy(
+                    text = "Newsletter", style = MaterialTheme.typography.caption.copy(
                         color = Color.White
                     )
                 )

@@ -22,7 +22,9 @@ import androidx.compose.ui.unit.sp
 import com.worker8.androiddevnews.podcast.PodcastService
 import com.worker8.androiddevnews.podcast.PodcastServiceAction
 import kotlinx.android.parcel.Parcelize
+import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 class TestServiceActivity : AppCompatActivity() {
     private lateinit var mService: PodcastService
     private var mBound: Boolean = false

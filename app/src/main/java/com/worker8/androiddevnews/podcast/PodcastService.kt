@@ -13,6 +13,7 @@ import android.support.v4.media.session.PlaybackStateCompat.*
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.worker8.androiddevnews.R
@@ -20,11 +21,11 @@ import com.worker8.androiddevnews.main.MainActivity
 import com.worker8.androiddevnews.util.tickerFlow
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import java.util.*
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 
+@ExperimentalTime
 class PodcastService : Service() {
     private val channelName = "Podcast"
     private val channelID = "PODCAST_CHANNEL_ID"
@@ -38,13 +39,40 @@ class PodcastService : Service() {
             return _binder
         }
     private val scope = CoroutineScope(Job())
+    private val onStartCommandFlow = MutableSharedFlow<Unit>()
+    private var initAction: PodcastServiceAction.Init? = null
+    private val rewindAction by lazy {
+        PodcastServiceAction.Rewind()
+    }
+    private val forwardAction by lazy {
+        PodcastServiceAction.Forward()
+    }
+    private val playPauseAction by lazy {
+        PodcastServiceAction.PlayPause()
+    }
+    private val closeAction by lazy {
+        PodcastServiceAction.Close()
+    }
+    private val mediaSession: MediaSessionCompat by lazy {
+        MediaSessionCompat(applicationContext, "PodcastService").apply {
+            setCallback(object : MediaSessionCompat.Callback() {
+                override fun onSeekTo(pos: Long) {
+                    exoPlayer.seekTo(pos)
+                }
+            })
+        }
+    }
+    val progressFlow = MutableSharedFlow<CurrentProgress>()
+    val isPlayingFlow = MutableSharedFlow<Boolean>()
+    //    var notificationTitle: String? = null
+    //    var notificationDesc: String? = null
 
     companion object {
         const val NotificationId = 0x44323
         const val Parcel = "Parcel"
     }
 
-    private val exoPlayer: SimpleExoPlayer by lazy {
+    val exoPlayer: SimpleExoPlayer by lazy {
         SimpleExoPlayer.Builder(applicationContext).build().apply {
             addListener(object : Player.Listener {
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -88,24 +116,9 @@ class PodcastService : Service() {
         }
     }
 
-    private val onStartCommandFlow = MutableSharedFlow<Unit>()
 
     class CurrentProgress(val title: String, val progress: Float, val iconUrl: String)
 
-    val progressFlow = MutableSharedFlow<CurrentProgress>()
-    val isPlayingFlow = MutableSharedFlow<Boolean>()
-
-    private val mediaSession: MediaSessionCompat by lazy {
-        MediaSessionCompat(applicationContext, "PodcastService").apply {
-            setCallback(object : MediaSessionCompat.Callback() {
-                override fun onSeekTo(pos: Long) {
-                    exoPlayer.seekTo(pos)
-                }
-            })
-        }
-    }
-
-    @ExperimentalTime
     override fun onCreate() {
         super.onCreate()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -113,7 +126,7 @@ class PodcastService : Service() {
         }
         bindedFlow
             .onEach {
-                Log.d("ccw","bindedFlow!")
+                Log.d("ccw", "bindedFlow!")
                 val progress = exoPlayer.currentPosition.toFloat() / exoPlayer.duration.toFloat()
                 progressFlow.emit(
                     CurrentProgress(
@@ -145,20 +158,11 @@ class PodcastService : Service() {
         }.launchIn(scope)
     }
 
-    //    var notificationTitle: String? = null
-//    var notificationDesc: String? = null
-    private var initAction: PodcastServiceAction.Init? = null
-    private val rewindAction by lazy {
-        PodcastServiceAction.Rewind()
-    }
-    private val forwardAction by lazy {
-        PodcastServiceAction.Forward()
-    }
-    private val playPauseAction by lazy {
-        PodcastServiceAction.PlayPause()
-    }
-    private val closeAction by lazy {
-        PodcastServiceAction.Close()
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("ddw", "[service] onDestroy")
+        scope.cancel()
+        exoPlayer.stop()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -249,11 +253,6 @@ class PodcastService : Service() {
         fun getService(): PodcastService = this@PodcastService
     }
 
-    override fun onUnbind(intent: Intent?): Boolean {
-        Log.d("ccw", "unbinded......")
-        return true
-    }
-
     override fun onRebind(intent: Intent?) {
         Log.d("ccw", "REBINDed-----")
         super.onRebind(intent)
@@ -280,11 +279,9 @@ class PodcastService : Service() {
         return binder
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("ddw", "[service] onDestroy")
-        scope.cancel()
-        exoPlayer.stop()
+    override fun onUnbind(intent: Intent?): Boolean {
+        Log.d("ccw", "unbinded......")
+        return true
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -299,6 +296,4 @@ class PodcastService : Service() {
         service.createNotificationChannel(channel)
         return channelId
     }
-
-
 }

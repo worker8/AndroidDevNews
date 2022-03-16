@@ -12,7 +12,9 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.worker8.androiddevnews.R
 import kotlinx.android.parcel.Parcelize
+import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 sealed interface PodcastServiceAction {
     @Parcelize
     data class Init(
@@ -49,7 +51,7 @@ sealed interface PodcastServiceAction {
         override fun buildNotificationAction(
             context: Context,
             isPlaying: Boolean
-        ): NotificationCompat.Action? {
+        ): NotificationCompat.Action {
             return NotificationCompat.Action.Builder(
                 R.drawable.exo_icon_fastforward,
                 name,

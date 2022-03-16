@@ -60,7 +60,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
-        useIR = true
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
     buildFeatures {
         compose = true
@@ -96,10 +96,10 @@ dependencies {
     implementation("io.coil-kt:coil:1.3.0")
     /* DI */
     implementation("androidx.constraintlayout:constraintlayout:2.1.2")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
-    kapt("com.google.dagger:hilt-android-compiler:2.38.1")
-    implementation("com.google.dagger:hilt-android:2.38.1")
+//    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
+//    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
+    kapt("com.google.dagger:hilt-android-compiler:${version("hiltDagger")}")
+    implementation("com.google.dagger:hilt-android:${version("hiltDagger")}")
 
     /* exoplayer - for podcast */
     implementation("com.google.android.exoplayer:exoplayer:${version("exoplayer")}")

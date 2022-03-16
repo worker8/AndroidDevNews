@@ -1,10 +1,13 @@
 package com.worker8.androiddevnews.podcast
 
 import android.util.Log
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.icosillion.podengine.models.Podcast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -14,13 +17,14 @@ import kotlin.Comparator
 import kotlin.time.ExperimentalTime
 
 
+@ExperimentalMaterialApi
 class PodcastController @Inject constructor() {
+    @OptIn(ExperimentalCoroutinesApi::class)
     @ExperimentalTime
     fun setInput(
         scope: CoroutineScope,
         input: PodcastContract.Input,
         viewState: PodcastContract.ViewState,
-        exoPlayer: SimpleExoPlayer
     ) {
 //        val url = "https://feeds.simplecast.com/LpAGSLnY"
 //        val url = "https://blog.jetbrains.com/feed/"
@@ -64,9 +68,14 @@ class PodcastController @Inject constructor() {
                 Log.d("ddw", "Controller - control CLICK")
             }
             .launchIn(scope)
+        input.listPlayClick
+            .onEach {
+                viewState.bottomSheetControlIsOpen.value = ModalBottomSheetValue.Expanded
+            }
+            .launchIn(scope)
         flow<Unit> {
             withContext(Dispatchers.IO) {
-                try {
+                runCatching {
                     val comparator =
                         Comparator<PodcastContract.EpisodePair> { a, b ->
                             if (a.episode.pubDate > b.episode.pubDate) {
@@ -94,8 +103,6 @@ class PodcastController @Inject constructor() {
                         }
                     }
                     viewState.episodePairs.value = treeSet.toList()
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
         }.launchIn(scope)

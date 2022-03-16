@@ -32,8 +32,7 @@ class RedditDetailActivity : AppCompatActivity() {
                     window.decorView.alpha = 0f
                 }) {
                     Surface(color = MaterialTheme.colors.background) {
-                        val redditDetailState =
-                            remember { mutableStateOf(listOf<CommentData>()) }
+                        val redditDetailState = remember { mutableStateOf(listOf<CommentData>()) }
                         RedditDetailScreen(
                             redditDetailController,
                             redditDetailState,
