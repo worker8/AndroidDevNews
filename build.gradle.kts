@@ -5,7 +5,7 @@ buildscript {
     val constraintLayoutCompose by extra("1.0.0-rc02")
     val activityCompose by extra("1.4.0")
     val navCompose by extra("2.4.0-beta02")
-    val coil by extra("1.3.0")
+    val coil by extra("2.1.0")
     val appCompat by extra("1.4.0")
     val material by extra("1.4.0")
     val ktx by extra("1.7.0")

@@ -99,8 +99,8 @@ dependencies {
 
 
     /* image loading libs */
-    implementation("io.coil-kt:coil-compose:1.3.0")
-    implementation("io.coil-kt:coil:1.3.0")
+    implementation("io.coil-kt:coil-compose:${version("coil")}")
+    implementation("io.coil-kt:coil:${version("coil")}")
     /* DI */
     implementation("androidx.constraintlayout:constraintlayout:2.1.2")
     kapt("com.google.dagger:hilt-android-compiler:${version("hiltDagger")}")

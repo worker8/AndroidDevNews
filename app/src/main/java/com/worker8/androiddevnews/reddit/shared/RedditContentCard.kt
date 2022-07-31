@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
+import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import coil.imageLoader
 import com.kirkbushman.araw.models.Submission
@@ -95,11 +96,8 @@ fun RedditContentCard(
             // 1. link - portrait (show at side), landscape (show full)
             // 2. selftext - portrait (show at side), landscape (show full)
 
-            Image(
-                painter = rememberImagePainter(
-                    createImageRequest(imageUrl),
-                    LocalContext.current.imageLoader
-                ),
+            AsyncImage(
+                model = imageUrl,
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier

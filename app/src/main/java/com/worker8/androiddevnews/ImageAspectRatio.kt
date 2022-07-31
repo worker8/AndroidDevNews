@@ -9,6 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import coil.imageLoader
 import com.worker8.androiddevnews.util.createImageRequest
@@ -19,15 +21,16 @@ fun ImageAspectRatio(
     contentScale: ContentScale = ContentScale.Fit,
     modifier: Modifier = Modifier
 ) {
-    var (aspectRatio, setAspectRatio) = remember { mutableStateOf(1f) }
-    Image(
-        painter = rememberImagePainter(
-            createImageRequest(imageUrl),
-            LocalContext.current.imageLoader
-        ) { _, current ->
-            setAspectRatio(current.size.width / current.size.height)
-            true
-        },
+    val (aspectRatio, setAspectRatio) = remember { mutableStateOf(1f) }
+    AsyncImage(
+        model = imageUrl,
+//        painter = rememberAsyncImagePainter(
+//            createImageRequest(imageUrl),
+//            LocalContext.current.imageLoader
+//        ) { _, current ->
+//            setAspectRatio(current.size.width / current.size.height)
+//            true
+//        },
         contentDescription = null,
         contentScale = contentScale,
         modifier = modifier
