@@ -102,7 +102,6 @@ dependencies {
     implementation("io.coil-kt:coil-compose:${version("coil")}")
     implementation("io.coil-kt:coil:${version("coil")}")
     /* DI */
-    implementation("androidx.constraintlayout:constraintlayout:2.1.2")
     kapt("com.google.dagger:hilt-android-compiler:${version("hiltDagger")}")
     implementation("com.google.dagger:hilt-android:${version("hiltDagger")}")
 
