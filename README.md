@@ -33,3 +33,7 @@ Prepare `secrets.properties` at the root of the project with reddit's client id,
 ```
 reddit_client_id=abcdG9Lt4-ABCg
 ```
+
+### About this project
+This is a personal project that I build during my very limited free time to learn and test out some things that I couldn't test at work.
+Feel free to open an issue if you would like to see a new feature, or interested to contribute a new feature!

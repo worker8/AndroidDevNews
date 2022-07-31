@@ -69,12 +69,19 @@ android {
         kotlinCompilerExtensionVersion = "${version("compose")}"
     }
 }
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
+}
 
 dependencies {
     /* android */
     implementation("androidx.core:core-ktx:${version("ktx")}")
     implementation("androidx.appcompat:appcompat:${version("appCompat")}")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:${version("lifecycleRuntimeKtx")}")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${version("lifecycleRuntimeKtx")}")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${version("lifecycleRuntimeKtx")}")
+
     /* UI libs - material & compose */
     implementation("com.google.android.material:material:${version("material")}")
     implementation("androidx.compose.ui:ui:${version("compose")}")
@@ -96,8 +103,6 @@ dependencies {
     implementation("io.coil-kt:coil:1.3.0")
     /* DI */
     implementation("androidx.constraintlayout:constraintlayout:2.1.2")
-//    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
-//    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
     kapt("com.google.dagger:hilt-android-compiler:${version("hiltDagger")}")
     implementation("com.google.dagger:hilt-android:${version("hiltDagger")}")
 

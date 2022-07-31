@@ -13,7 +13,7 @@ buildscript {
     val ARAW by extra("f0171e78e4")
     val rssProf18 by extra("3.1.5")
     val rssPodcastFeed by extra("2.4.1")
-    val hiltDagger by extra("2.40.5")
+    val hiltDagger by extra("2.43.1")
     /* test versions */
     val junit by extra("4.13.2")
     val junitExt by extra("1.1.3")
@@ -26,9 +26,9 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.2.0-alpha06")
+        classpath("com.android.tools.build:gradle:7.2.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.38.1")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.43.1")
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle.kts files
