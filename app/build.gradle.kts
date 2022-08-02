@@ -110,7 +110,7 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer-core:${version("exoplayer")}")
 
     /* for notification compat */
-    implementation("androidx.media:media:1.4.3")
+    implementation("androidx.media:media:1.6.0")
 //    implementation("com.google.android.exoplayer:extension-mediasession:${version("exoplayer")}")
 //    implementation("com.google.android.exoplayer:exoplayer-ui:${version("exoplayer")}")
 
