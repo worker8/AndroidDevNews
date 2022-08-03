@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 32
     buildToolsVersion = "30.0.3"
 //    buildTypes {
 //        getByName("all") {
@@ -23,7 +23,7 @@ android {
     defaultConfig {
         applicationId = "com.worker8.androiddevnews"
         minSdk = 21
-        targetSdk = 30
+        targetSdk = 32
         versionCode = 1
         versionName = "1.0"
 
@@ -61,12 +61,13 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+        freeCompilerArgs += "-Xjvm-default=compatibility"
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "${version("compose")}"
+        kotlinCompilerExtensionVersion = libraries.versions.compose.get()
     }
 }
 // Allow references to generated code
@@ -76,48 +77,38 @@ kapt {
 
 dependencies {
     /* android */
-    implementation("androidx.core:core-ktx:${version("ktx")}")
-    implementation("androidx.appcompat:appcompat:${version("appCompat")}")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${version("lifecycleRuntimeKtx")}")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${version("lifecycleRuntimeKtx")}")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${version("lifecycleRuntimeKtx")}")
+    implementation(libraries.androidx.appcompat)
+    implementation(libraries.androidx.core.ktx)
+    implementation(libraries.bundles.lifecycle)
 
     /* UI libs - material & compose */
-    implementation("com.google.android.material:material:${version("material")}")
-    implementation("androidx.compose.ui:ui:${version("compose")}")
-    implementation("androidx.compose.material:material:${version("compose")}")
-    implementation("androidx.compose.ui:ui-tooling:${version("compose")}")
-    implementation("androidx.activity:activity-compose:${version("activityCompose")}")
-    implementation("androidx.navigation:navigation-compose:${version("navCompose")}")
-    implementation("androidx.constraintlayout:constraintlayout-compose:${version("constraintLayoutCompose")}")
+    implementation(libraries.android.material)
+    implementation(libraries.bundles.compose)
 
     /* reddit client */
-    implementation("com.github.KirkBushman:ARAW:${version("ARAW")}")
-    /* rss */
-    implementation("com.prof18.rssparser:rssparser:${version("rssProf18")}")
-    implementation("com.icosillion.podengine:podengine:${version("rssPodcastFeed")}")
+    implementation(libraries.araw)
 
+    /* rss */
+    implementation(libraries.rssProf18)
+    implementation(libraries.rssPodcastFeed)
 
     /* image loading libs */
-    implementation("io.coil-kt:coil-compose:${version("coil")}")
-    implementation("io.coil-kt:coil:${version("coil")}")
+    implementation(libraries.bundles.coil)
+
     /* DI */
-    kapt("com.google.dagger:hilt-android-compiler:${version("hiltDagger")}")
-    implementation("com.google.dagger:hilt-android:${version("hiltDagger")}")
+    kapt(libraries.dagger.hilt.compiler)
+    implementation(libraries.dagger.hilt.android)
 
     /* exoplayer - for podcast */
-    implementation("com.google.android.exoplayer:exoplayer:${version("exoplayer")}")
-    implementation("com.google.android.exoplayer:exoplayer-core:${version("exoplayer")}")
+    implementation(libraries.bundles.exoplayer)
 
     /* for notification compat */
-    implementation("androidx.media:media:1.6.0")
+    implementation(libraries.androidx.media)
 //    implementation("com.google.android.exoplayer:extension-mediasession:${version("exoplayer")}")
 //    implementation("com.google.android.exoplayer:exoplayer-ui:${version("exoplayer")}")
 
-    testImplementation("junit:junit:${version("junit")}")
-    androidTestImplementation("androidx.test.ext:junit:${version("junitExt")}")
-    androidTestImplementation("androidx.test.espresso:espresso-core:${version("espresso")}")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${version("compose")}")
+    testImplementation(libraries.test.junit)
+    testImplementation(libraries.test.junit.ext)
+    testImplementation(libraries.test.espresso)
+    testImplementation(libraries.test.compose.ui)
 }
-
-fun version(key: String) = rootProject.extra[key] as String

@@ -1,37 +1,13 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    /* versions */
-    val compose by extra("1.1.0-rc03")
-    val constraintLayoutCompose by extra("1.0.0-rc02")
-    val activityCompose by extra("1.4.0")
-    val navCompose by extra("2.4.0-beta02")
-    val coil by extra("2.1.0")
-    val appCompat by extra("1.4.0")
-    val material by extra("1.4.0")
-    val ktx by extra("1.7.0")
-    val lifecycleRuntimeKtx by extra("2.4.0")
-    val ARAW by extra("f0171e78e4")
-    val rssProf18 by extra("3.1.5")
-    val rssPodcastFeed by extra("2.4.1")
-    val hiltDagger by extra("2.43.1")
-    /* test versions */
-    val junit by extra("4.13.2")
-    val junitExt by extra("1.1.3")
-    val espresso by extra("3.4.0")
-    val hilt by extra("2.38.1")
-    val exoplayer by extra("2.15.0")
-
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.2.1")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.43.1")
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle.kts files
+        classpath(libraries.classpath.android.gradlePlugin)
+        classpath(libraries.classpath.dagger.hilt.gradlePlugin)
+        classpath(libraries.classpath.kotlin.gradlePlugin)
     }
 }
 //subprojects {
