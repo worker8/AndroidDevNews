@@ -1,4 +1,5 @@
-### Description
+##  <img src="https://user-images.githubusercontent.com/1988156/186423734-29b8283d-ead5-471f-8394-fbd2062be79a.png" width="40px" /> Android Dev News
+
 This application brings you the latest Android Developer news from the community/official channels by aggregating a few sources such as [/r/AndroidDev subreddit](https://reddit.com/r/androiddev), popular podcasts (e.g. [Fragmented Podcast](https://fragmentedpodcast.com/), [Android Developer Backstage](https://androidbackstage.blogspot.com/), etc), [Android Weekly](https://androidweekly.net/), [Kotlin Weekly](http://www.kotlinweekly.net/). 
 
 I intend to add more sources, such as [ProAndroidDev](https://proandroiddev.com/), [Android Developer at Medium](https://medium.com/androiddevelopers), [Android Developer Blog](https://android-developers.googleblog.com) and others. However this will come later, because the current features are still not yet polished, for example there is no way to share a post, there are various minor bugs surrounding the podcast listening feature among others.
