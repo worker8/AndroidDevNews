@@ -3,8 +3,14 @@ This application brings you the latest Android Developer news from the community
 
 I intend to add more sources, such as [ProAndroidDev](https://proandroiddev.com/), [Android Developer at Medium](https://medium.com/androiddevelopers), [Android Developer Blog](https://android-developers.googleblog.com) and others. However this will come later, because the current features are still not yet polished, for example there is no way to share a post, there are various minor bugs surrounding the podcast listening feature among others.
 
-I created this project as a learning process for the Jetpack Compose library, so I only develop it while I can find a tad bit of free time. 
+I created this project as a learning process for the Jetpack Compose library, so I only develop it while I can find a tad bit of free time. This project is not yet released to the PlayStore since it's still pretty rough around the edges. It is however pretty usable, so give it a go by building the project if you're interested!
 
+Drop an issue if you have a problem, suggestion or anything!
+
+
+## Screenshots
+
+Here are some screenshots of the app.
 
 ### r/AndroidDev Subreddit
 | Main | Comments |
