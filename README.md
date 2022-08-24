@@ -1,5 +1,9 @@
-### Features
-Currently this app is still under heavy development. The following features are implemented as of now:
+### Description
+This application brings you the latest Android Developer news from the community/official channels by aggregating a few sources such as [/r/AndroidDev subreddit](https://reddit.com/r/androiddev), popular podcasts (e.g. [Fragmented Podcast](https://fragmentedpodcast.com/), [Android Developer Backstage](https://androidbackstage.blogspot.com/), etc), [Android Weekly](https://androidweekly.net/), [Kotlin Weekly](http://www.kotlinweekly.net/). 
+
+I intend to add more sources, such as [ProAndroidDev](https://proandroiddev.com/), [Android Developer at Medium](https://medium.com/androiddevelopers), [Android Developer Blog](https://android-developers.googleblog.com) and others. However this will come later, because the current features are still not yet polished, for example there is no way to share a post, there are various minor bugs surrounding the podcast listening feature among others.
+
+I created this project as a learning process for the Jetpack Compose library, so I only develop it while I can find a tad bit of free time. 
 
 
 ### r/AndroidDev Subreddit
