@@ -1,6 +1,10 @@
 package com.worker8.androiddevnews.podcast
 
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -9,20 +13,34 @@ import android.os.Build
 import android.os.IBinder
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat.*
+import android.support.v4.media.session.PlaybackStateCompat.ACTION_FAST_FORWARD
+import android.support.v4.media.session.PlaybackStateCompat.ACTION_PAUSE
+import android.support.v4.media.session.PlaybackStateCompat.ACTION_PLAY
+import android.support.v4.media.session.PlaybackStateCompat.ACTION_REWIND
+import android.support.v4.media.session.PlaybackStateCompat.ACTION_SEEK_TO
+import android.support.v4.media.session.PlaybackStateCompat.Builder
+import android.support.v4.media.session.PlaybackStateCompat.STATE_PAUSED
+import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.worker8.androiddevnews.R
 import com.worker8.androiddevnews.main.MainActivity
 import com.worker8.androiddevnews.util.tickerFlow
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 
 @ExperimentalTime
@@ -193,7 +211,7 @@ class PodcastService : Service() {
         val pendingIntent =
             //TODO - deeplink into podcast
             Intent(applicationContext, MainActivity::class.java).let { notificationIntent ->
-                PendingIntent.getActivity(applicationContext, 0, notificationIntent, 0)
+                PendingIntent.getActivity(applicationContext, 0, notificationIntent, PendingIntent.FLAG_MUTABLE)
             }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

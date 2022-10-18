@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = 33
     buildToolsVersion = "30.0.3"
 //    buildTypes {
 //        getByName("all") {
