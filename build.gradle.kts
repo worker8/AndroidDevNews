@@ -10,11 +10,8 @@ buildscript {
     }
     dependencies {
         classpath(libs.classpath.android.gradlePlugin)
-//        classpath("com.android.tools.build:gradle:7.3.0")
         classpath(libs.classpath.dagger.hilt.gradlePlugin)
-//        classpath("com.google.dagger:hilt-android-gradle-plugin:2.44")
         classpath(libs.classpath.kotlin.gradlePlugin)
-//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10")
         classpath("nl.littlerobots.vcu:plugin:0.5.3")
     }
 }

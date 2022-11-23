@@ -12,13 +12,8 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://jitpack.io")
-//        jcenter() // Warning: this repository is going to shut down soon
     }
-//    versionCatalogs {
-//        create("libraries") {
-//            from(files("./gradle/libs.versions.toml"))
-//        }
-//    }
+
 }
 rootProject.name = "AndroidDevNews"
 include(":app")
