@@ -1,4 +1,4 @@
-package com.worker8.androiddevnews
+package com.worker8.androiddevnews.common
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -19,8 +19,8 @@ import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 
 /**
  * A layout composable with [content].

@@ -9,7 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.models.base.CommentData
-import com.worker8.androiddevnews.SwipeToCloseBox
+import com.worker8.androiddevnews.common.SwipeToCloseBox
 import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
