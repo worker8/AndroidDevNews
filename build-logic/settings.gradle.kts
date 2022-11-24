@@ -22,7 +22,7 @@ dependencyResolutionManagement {
         jcenter() // Warning: this repository is going to shut down soon
     }
     versionCatalogs {
-        create("libraries") {
+        create("libs") {
             from(files("../gradle/libs.versions.toml"))
         }
     }

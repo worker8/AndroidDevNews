@@ -7,6 +7,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("../nowinandroid-prebuilts/m2repository") }
     }
     dependencies {
         classpath(libs.classpath.android.gradlePlugin)
