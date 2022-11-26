@@ -1,4 +1,4 @@
-package com.worker8.androiddevnews.ui.theme
+package com.worker8.androiddevnews.common.compose.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,6 +1,9 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    kotlin("kapt")
+    id("androiddevnews.android.library.compose")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -41,10 +44,17 @@ android {
 
 dependencies {
     implementation(project(":common"))
-    implementation(libs.bundles.compose)
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.4.1")
-    implementation("com.google.android.material:material:1.5.0")
+
+    /* material */
+    implementation(libs.android.material)
+    /* reddit client */
+    implementation(libs.araw)
+    /* image loading libs */
+    implementation(libs.bundles.coil)
+    /* DI */
+    kapt(libs.dagger.hilt.compiler)
+    implementation(libs.dagger.hilt.android)
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")

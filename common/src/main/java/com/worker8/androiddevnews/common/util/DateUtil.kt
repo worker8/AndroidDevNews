@@ -1,7 +1,8 @@
-package com.worker8.androiddevnews.util
+package com.worker8.androiddevnews.common.util
 
 import android.text.format.DateUtils
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 fun Date.toRelativeTimeString() =
     DateUtils

@@ -3,7 +3,15 @@ package com.worker8.androiddevnews.reddit.shared
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -14,29 +22,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import coil.compose.AsyncImage
-import coil.compose.rememberImagePainter
-import coil.imageLoader
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.utils.createdDate
-import com.worker8.androiddevnews.R
+import com.worker8.androiddevnews.common.compose.theme.Neutral01
+import com.worker8.androiddevnews.common.compose.theme.Neutral06
+import com.worker8.androiddevnews.common.compose.theme.Neutral10
+import com.worker8.androiddevnews.common.compose.theme.Primary08
+import com.worker8.androiddevnews.common.util.toRelativeTimeString
+import com.worker8.androiddevnews.reddit.R
 import com.worker8.androiddevnews.reddit.RenderFlair
 import com.worker8.androiddevnews.reddit.isImageUrl
 import com.worker8.androiddevnews.reddit.upvoteRatioPercentage
 import com.worker8.androiddevnews.ui.HtmlView
-import com.worker8.androiddevnews.ui.theme.Neutral01
-import com.worker8.androiddevnews.ui.theme.Neutral06
-import com.worker8.androiddevnews.ui.theme.Neutral10
-import com.worker8.androiddevnews.ui.theme.Primary08
-import com.worker8.androiddevnews.util.createImageRequest
-import com.worker8.androiddevnews.util.toRelativeTimeString
-
 
 @Composable
 fun RedditContentCard(

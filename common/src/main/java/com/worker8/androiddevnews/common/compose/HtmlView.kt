@@ -11,8 +11,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
-import com.worker8.androiddevnews.util.dpToPx
-import com.worker8.androiddevnews.util.trimTrailingWhitespace
+import com.worker8.androiddevnews.common.util.dpToPx
+import com.worker8.androiddevnews.common.util.trimTrailingWhitespace
 
 @Composable
 fun HtmlView(

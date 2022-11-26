@@ -4,11 +4,11 @@ import com.kirkbushman.araw.RedditClient
 import com.kirkbushman.araw.helpers.AuthUserlessHelper
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.models.base.CommentData
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
+import kotlinx.coroutines.flow.flow
 
 class RedditRepo @Inject constructor(
-    val userlessAuth: AuthUserlessHelper
+    private val userlessAuth: AuthUserlessHelper
 ) {
     private var redditClient: RedditClient? = null
     fun getRedditClient() =
@@ -32,6 +32,6 @@ class RedditRepo @Inject constructor(
             ?.contributionsClient
             ?.comments(submissionId)
             ?.fetchNext()
-            ?: error("redditClient has to be initialized first by calling getRedditClient()")
+            ?: error("redditClient has to be initialize first by calling getRedditClient()")
     }
 }

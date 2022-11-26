@@ -1,4 +1,4 @@
-package com.worker8.androiddevnews.util
+package com.worker8.androiddevnews.common.util
 
 /** copy from StackOverflow: https://stackoverflow.com/a/10187511/75579
  * Trims trailing whitespace. Removes any of these characters:

@@ -18,8 +18,7 @@ class PodcastModule {
     fun provideRssParser(@ApplicationContext context: Context) = Parser.Builder()
         .context(context)
         .charset(Charset.forName("ISO-8859-7"))
-        .cacheExpirationMillis(500) // one day
-//        .cacheExpirationMillis(24L * 60L * 60L * 100L) // one day
+        .cacheExpirationMillis(24L * 60L * 60L * 100L) // one day
         .build()
 
     @Singleton

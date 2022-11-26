@@ -3,8 +3,7 @@ import com.worker8.gradle.Secrets
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    kotlin("kapt")
-    id("dagger.hilt.android.plugin")
+    id("androiddevnews.android.hilt")
     id("kotlin-parcelize")
 }
 
@@ -96,10 +95,6 @@ dependencies {
 
     /* image loading libs */
     implementation(libs.bundles.coil)
-
-    /* DI */
-    kapt(libs.dagger.hilt.compiler)
-    implementation(libs.dagger.hilt.android)
 
     /* exoplayer - for podcast */
     implementation(libs.bundles.exoplayer)

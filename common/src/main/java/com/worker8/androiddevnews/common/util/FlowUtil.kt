@@ -1,4 +1,4 @@
-package com.worker8.androiddevnews.util
+package com.worker8.androiddevnews.common.util
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow

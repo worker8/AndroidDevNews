@@ -13,7 +13,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.*
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Phone
@@ -23,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -31,20 +39,29 @@ import androidx.navigation.compose.rememberNavController
 import com.google.android.exoplayer2.ExoPlayer
 import com.kirkbushman.araw.models.Submission
 import com.worker8.androiddevnews.R
+import com.worker8.androiddevnews.common.compose.theme.AndroidDevNewsTheme
+import com.worker8.androiddevnews.common.compose.theme.BottomNavBg
 import com.worker8.androiddevnews.newsletter.NewsletterScreen
-import com.worker8.androiddevnews.podcast.*
+import com.worker8.androiddevnews.podcast.PodcastContract
+import com.worker8.androiddevnews.podcast.PodcastController
+import com.worker8.androiddevnews.podcast.PodcastScreen
+import com.worker8.androiddevnews.podcast.PodcastService
+import com.worker8.androiddevnews.podcast.PodcastServiceAction
 import com.worker8.androiddevnews.reddit.RedditController
 import com.worker8.androiddevnews.reddit.RedditScreen
-import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
-import com.worker8.androiddevnews.ui.theme.BottomNavBg
+import com.worker8.androiddevnews.ui.WebViewActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import javax.inject.Inject
+import kotlin.time.ExperimentalTime
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
-import kotlin.time.ExperimentalTime
+import kotlinx.coroutines.launch
 
 
 @ExperimentalTime
@@ -165,7 +182,7 @@ fun MainScreen(
     val homeScreenState = remember { mutableStateOf(BottomNavRoute.REDDIT) }
     val redditState = remember { mutableStateOf(listOf<Submission>()) }
     val redditListState = rememberLazyListState()
-
+    val context = LocalContext.current
     val viewState = object : PodcastContract.ViewState {
         override val episodePairs =
             remember { mutableStateOf(listOf<PodcastContract.EpisodePair>()) }
@@ -192,8 +209,14 @@ fun MainScreen(
                     redditController,
                     redditState,
                     redditListState
-                )
+                ) { url ->
+                    val intent = Intent(context, WebViewActivity::class.java).apply {
+                        putExtra(WebViewActivity.UrlKey, url)
+                    }
+                    context.startActivity(intent)
+                }
             }
+
             composable(BottomNavRoute.PODCAST.toString()) {
                 PodcastScreen(
                     navController,
@@ -207,6 +230,7 @@ fun MainScreen(
             }
         }
         BottomNavigationContent(navController = navController, homeScreenState = homeScreenState)
+    }
 //        Row(modifier = Modifier.weight(1f)) {
 //            if (homeScreenState.value == BottomNavType.HOME) {
 //                RedditScreen(redditController, redditState, redditListState)
@@ -214,8 +238,8 @@ fun MainScreen(
 //                PodcastScreen(podcastController, podcastState, podcastListState)
 //            }
 //        }
-    }
 }
+
 
 enum class BottomNavRoute {
     REDDIT,

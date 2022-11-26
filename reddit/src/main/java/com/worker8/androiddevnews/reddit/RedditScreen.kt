@@ -3,12 +3,24 @@ package com.worker8.androiddevnews.reddit
 import android.content.Intent
 import android.webkit.MimeTypeMap
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -17,11 +29,10 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.kirkbushman.araw.models.Submission
+import com.worker8.androiddevnews.common.compose.theme.Neutral02
 import com.worker8.androiddevnews.reddit.detail.RedditDetailActivity
 import com.worker8.androiddevnews.reddit.detail.RedditDetailActivity.Companion.SubmissionKey
 import com.worker8.androiddevnews.reddit.shared.RedditContentCard
-import com.worker8.androiddevnews.ui.WebViewActivity
-import com.worker8.androiddevnews.ui.theme.Neutral02
 import kotlinx.coroutines.cancel
 
 @Composable
@@ -29,7 +40,8 @@ fun RedditScreen(
     navController: NavHostController,
     controller: RedditController,
     state: MutableState<List<Submission>>,
-    lazyListState: LazyListState
+    lazyListState: LazyListState,
+    onCardClick: (String) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     DisposableEffect(scope) {
@@ -38,14 +50,15 @@ fun RedditScreen(
             scope.cancel()
         }
     }
-    RedditList(navController, state, lazyListState)
+    RedditList(navController, state, lazyListState, onCardClick)
 }
 
 @Composable
 fun RedditList(
     navController: NavHostController,
     state: State<List<Submission>>,
-    lazyListState: LazyListState
+    lazyListState: LazyListState,
+    onCardClick: (String) -> Unit,
 ) {
     val context = LocalContext.current
 //    CompositionLocalProvider(LocalImageLoader provides ImageLoader(LocalContext.current)) {
@@ -77,10 +90,7 @@ fun RedditList(
                         submission = submission,
                         truncation = true,
                         onLinkClick = { _submission ->
-                            val intent = Intent(context, WebViewActivity::class.java).apply {
-                                putExtra(WebViewActivity.UrlKey, _submission.url)
-                            }
-                            context.startActivity(intent)
+                            onCardClick(_submission.url)
                         },
                         onClick = {
                             val intent = Intent(context, RedditDetailActivity::class.java).apply {

@@ -28,7 +28,7 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.worker8.androiddevnews.R
 import com.worker8.androiddevnews.main.MainActivity
-import com.worker8.androiddevnews.util.tickerFlow
+import com.worker8.androiddevnews.common.util.tickerFlow
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.CoroutineScope
