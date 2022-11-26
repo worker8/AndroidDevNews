@@ -1,6 +1,6 @@
 package com.worker8.androiddevnews
 
-import com.worker8.androiddevnews.util.DurationParser
+import com.worker8.androiddevnews.common.util.DurationParser
 import org.junit.Test
 
 import org.junit.Assert.*

@@ -1,4 +1,6 @@
+build/
 */build/
+*/*/build/
 secrets.properties
 *.iml
 .gradle

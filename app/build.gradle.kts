@@ -3,8 +3,7 @@ import com.worker8.gradle.Secrets
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    kotlin("kapt")
-    id("dagger.hilt.android.plugin")
+    id("androiddevnews.android.hilt")
     id("kotlin-parcelize")
 }
 
@@ -23,7 +22,7 @@ android {
     defaultConfig {
         applicationId = "com.worker8.androiddevnews"
         minSdk = 21
-        targetSdk = 32
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -67,7 +66,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = libraries.versions.compose.get()
+        kotlinCompilerExtensionVersion = libs.versions.compose.get()
     }
 }
 // Allow references to generated code
@@ -76,39 +75,37 @@ kapt {
 }
 
 dependencies {
+    implementation(project(":reddit"))
+    implementation(project(":common"))
     /* android */
-    implementation(libraries.androidx.appcompat)
-    implementation(libraries.androidx.core.ktx)
-    implementation(libraries.bundles.lifecycle)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.bundles.lifecycle)
 
     /* UI libs - material & compose */
-    implementation(libraries.android.material)
-    implementation(libraries.bundles.compose)
+    implementation(libs.android.material)
+    implementation(libs.bundles.compose)
 
     /* reddit client */
-    implementation(libraries.araw)
+    implementation(libs.araw)
 
     /* rss */
-    implementation(libraries.rssProf18)
-    implementation(libraries.rssPodcastFeed)
+    implementation(libs.rssProf18)
+    implementation(libs.rssPodcastFeed)
 
     /* image loading libs */
-    implementation(libraries.bundles.coil)
-
-    /* DI */
-    kapt(libraries.dagger.hilt.compiler)
-    implementation(libraries.dagger.hilt.android)
+    implementation(libs.bundles.coil)
 
     /* exoplayer - for podcast */
-    implementation(libraries.bundles.exoplayer)
+    implementation(libs.bundles.exoplayer)
 
     /* for notification compat */
-    implementation(libraries.androidx.media)
+    implementation(libs.androidx.media)
 //    implementation("com.google.android.exoplayer:extension-mediasession:${version("exoplayer")}")
 //    implementation("com.google.android.exoplayer:exoplayer-ui:${version("exoplayer")}")
 
-    testImplementation(libraries.test.junit)
-    testImplementation(libraries.test.junit.ext)
-    testImplementation(libraries.test.espresso)
-    testImplementation(libraries.test.compose.ui)
+    testImplementation(libs.test.junit)
+    testImplementation(libs.test.junit.ext)
+    testImplementation(libs.test.espresso)
+    testImplementation(libs.test.compose.ui)
 }

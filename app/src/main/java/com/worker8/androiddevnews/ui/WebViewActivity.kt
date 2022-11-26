@@ -3,7 +3,7 @@ package com.worker8.androiddevnews.ui
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import com.worker8.androiddevnews.ui.theme.AndroidDevNewsTheme
+import com.worker8.androiddevnews.common.compose.theme.AndroidDevNewsTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

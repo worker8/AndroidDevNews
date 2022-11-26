@@ -7,11 +7,12 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("../nowinandroid-prebuilts/m2repository") }
     }
     dependencies {
-        classpath(libraries.classpath.android.gradlePlugin)
-        classpath(libraries.classpath.dagger.hilt.gradlePlugin)
-        classpath(libraries.classpath.kotlin.gradlePlugin)
+        classpath(libs.classpath.android.gradlePlugin)
+        classpath(libs.classpath.dagger.hilt.gradlePlugin)
+        classpath(libs.classpath.kotlin.gradlePlugin)
         classpath("nl.littlerobots.vcu:plugin:0.5.3")
     }
 }

@@ -13,7 +13,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import coil.imageLoader
-import com.worker8.androiddevnews.util.createImageRequest
+import com.worker8.androiddevnews.common.util.createImageRequest
 
 @Composable
 fun ImageAspectRatio(

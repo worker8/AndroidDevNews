@@ -1,17 +1,21 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
         maven("https://jitpack.io")
-        jcenter() // Warning: this repository is going to shut down soon
     }
-    versionCatalogs {
-        create("libraries") {
-            from(files("./gradle/libraries.versions.toml"))
-        }
-    }
+
 }
 rootProject.name = "AndroidDevNews"
+includeBuild("build-logic")
 include(":app")
-enableFeaturePreview("VERSION_CATALOGS")
+include(":reddit")
+include(":common")
