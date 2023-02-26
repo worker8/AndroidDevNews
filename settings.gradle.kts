@@ -12,7 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
         maven("https://jitpack.io")
     }
-
 }
 rootProject.name = "AndroidDevNews"
 includeBuild("build-logic")

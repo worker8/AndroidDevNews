@@ -3,14 +3,25 @@ package com.worker8.androiddevnews.reddit.detail
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,11 +36,11 @@ import com.kirkbushman.araw.models.MoreComments
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.models.base.CommentData
 import com.kirkbushman.araw.utils.createdDate
-import com.worker8.androiddevnews.reddit.shared.RedditContentCard
-import com.worker8.androiddevnews.ui.HtmlView
 import com.worker8.androiddevnews.common.compose.theme.Neutral02
 import com.worker8.androiddevnews.common.compose.theme.Primary01
 import com.worker8.androiddevnews.common.util.toRelativeTimeString
+import com.worker8.androiddevnews.reddit.shared.RedditContentCard
+import com.worker8.androiddevnews.ui.HtmlView
 import kotlinx.coroutines.cancel
 
 private const val ColorBarWidth = 3
@@ -72,7 +83,6 @@ fun RedditDetailScreen(
                     val columnHeightDp = LocalDensity.current.run { columnHeight.toDp() }
                     ConstraintLayout(
                         modifier = Modifier
-                            .padding(horizontal = (ColorBarWidth * commentData.depth).dp)
                             .fillParentMaxWidth()
                             .wrapContentHeight()
                     ) {
@@ -80,10 +90,11 @@ fun RedditDetailScreen(
                         val color = colors[commentData.depth % colors.size]
                         Box(
                             modifier = Modifier
+                                .padding(start = (ColorBarWidth * commentData.depth).dp)
                                 .background(color)
                                 .constrainAs(colorBarRef) {
                                     start.linkTo(parent.start)
-                                    width = Dimension.value(ColorBarWidth.dp)
+                                    width = Dimension.value(ColorBarWidth.dp + (ColorBarWidth * commentData.depth).dp)
                                     height = Dimension.value(columnHeightDp)
                                 }
                         )

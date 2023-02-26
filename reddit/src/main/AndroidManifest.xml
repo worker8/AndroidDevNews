@@ -3,7 +3,7 @@
 
     <application>
         <activity
-            android:name=".reddit.detail.RedditDetailActivity"
+            android:name=".detail.RedditDetailActivity"
             android:theme="@style/Theme.SwipeToClose" />
     </application>
 </manifest>
