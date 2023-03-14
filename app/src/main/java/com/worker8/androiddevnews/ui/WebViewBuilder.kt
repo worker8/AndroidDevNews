@@ -2,6 +2,8 @@ package com.worker8.androiddevnews.ui
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Icon
+import android.util.Log
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -20,6 +22,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.List
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -96,7 +99,7 @@ fun WebViewScreen(linkUrl: String) {
     ) {
         TopAppBar(
             backgroundColor = MaterialTheme.colors.background,
-            contentColor = MaterialTheme.colors.onBackground
+            contentColor = MaterialTheme.colors.onBackground,
         ) {
             Icon(
                 imageVector = Icons.Outlined.Close,
@@ -133,6 +136,18 @@ fun WebViewScreen(linkUrl: String) {
                     )
                 }
             }
+            Icon(
+                imageVector = Icons.Outlined.List,
+                contentDescription = null,
+                modifier = Modifier
+                    .width(32.dp)
+                    .height(32.dp)
+                    .padding(6.dp)
+                    .padding(start = 4.dp)
+                    .clickable {
+                        Log.d("ddw", "clicked!")
+                    }
+            )
         }
         Surface(color = MaterialTheme.colors.background) {
             AndroidView(factory = { context ->
