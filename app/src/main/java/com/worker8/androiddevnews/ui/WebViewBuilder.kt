@@ -1,5 +1,6 @@
 package com.worker8.androiddevnews.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.view.ViewGroup
@@ -34,6 +35,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.worker8.androiddevnews.common.util.getActivity
 import java.net.URL
 
+@SuppressLint("SetJavaScriptEnabled")
 fun createWebView(
     context: Context,
     linkUrl: String,
@@ -44,7 +46,7 @@ fun createWebView(
         settings.apply {
             builtInZoomControls = true
             supportZoom()
-            cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
+            cacheMode = WebSettings.LOAD_DEFAULT
             javaScriptEnabled = true
             javaScriptCanOpenWindowsAutomatically = true
             databaseEnabled = true
