@@ -3,6 +3,7 @@ package com.worker8.androiddevnews.di
 import android.content.Context
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.prof.rssparser.Parser
+import com.worker8.androiddevnews.podcast.PodcastRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,6 +21,9 @@ class PodcastModule {
         .charset(Charset.forName("ISO-8859-7"))
         .cacheExpirationMillis(24L * 60L * 60L * 100L) // one day
         .build()
+
+    @Provides
+    fun providesPodcastRepository() = PodcastRepository()
 
     @Singleton
     @Provides

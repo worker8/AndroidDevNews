@@ -184,6 +184,7 @@ class PodcastService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d("ddw", "[service] onStartCommand: ${intent?.getStringExtra("action")}")
         when (intent?.getStringExtra("action")) {
             PodcastServiceAction.Init.name -> {
                 val initActionParcel = intent.getParcelableExtra<PodcastServiceAction.Init>(Parcel)
