@@ -3,7 +3,6 @@ package com.worker8.androiddevnews.podcast
 import android.content.res.ColorStateList
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetState
+import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
@@ -64,7 +64,6 @@ import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImage
 import com.google.android.exoplayer2.ui.PlayerView
-import com.worker8.androiddevnews.ui.HtmlView
 import com.worker8.androiddevnews.common.compose.theme.Neutral01
 import com.worker8.androiddevnews.common.compose.theme.Neutral02
 import com.worker8.androiddevnews.common.compose.theme.Neutral09
@@ -72,9 +71,10 @@ import com.worker8.androiddevnews.common.compose.theme.Neutral10
 import com.worker8.androiddevnews.common.compose.theme.Primary07
 import com.worker8.androiddevnews.common.util.DurationParser
 import com.worker8.androiddevnews.common.util.toRelativeTimeString
-import kotlin.time.ExperimentalTime
+import com.worker8.androiddevnews.ui.HtmlView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.time.ExperimentalTime
 
 @ExperimentalCoilApi
 @OptIn(ExperimentalMaterialApi::class)
@@ -181,6 +181,7 @@ fun PodcastScreen(
                                 viewState.episodePairs,
                                 viewState.currentPlayingEpisode,
                                 viewState.isPlaying,
+                                viewState.isLoading,
                                 viewState.lazyListState,
                                 input,
                                 scope
@@ -239,11 +240,7 @@ fun PlayerControl(
                 } else {
                     scope.launch {
                         bottomSheetState.expand()
-//                        bottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
                     }
-                }
-                scope.launch {
-                    input.controlPlayClick.emit(Unit)
                 }
             },
         verticalAlignment = Alignment.CenterVertically
@@ -287,12 +284,12 @@ fun PlayerControl(
 }
 
 @ExperimentalTime
-@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun PodcastList(
     episodePairsState: State<List<PodcastContract.EpisodePair>>,
     currentPlayingEpisode: State<PodcastContract.EpisodePair?>,
     isPlaying: State<Boolean>,
+    isLoading: State<Boolean>,
     lazyListState: LazyListState,
     input: PodcastContract.Input,
     coroutineScope: CoroutineScope
@@ -353,9 +350,11 @@ fun PodcastList(
                         content = episode.description ?: "(no summary)",
                         truncation = true
                     )
+//                    val exoPlayer by input.exoPlayer.collectAsState(initial = null)
                     PlayButton(
                         duration = episode.iTunesInfo.duration,
-                        isPlaying = currentPlayingEpisode.value?.episode?.guid == episode.guid && isPlaying.value
+                        isPlaying = currentPlayingEpisode.value?.episode?.guid == episode.guid && isPlaying.value,
+                        isLoading = currentPlayingEpisode.value?.episode?.guid == episode.guid && isLoading.value
                     ) {
                         Log.d("ddw", "${episode.title}: ${episode.enclosure.url}")
                         coroutineScope.launch {
@@ -368,13 +367,19 @@ fun PodcastList(
                         modifier = Modifier.padding(top = 32.dp)
                     )
                 }
-
-            })
+            }
+        )
     }
 }
 
 @Composable
-fun PlayButton(duration: String, isPlaying: Boolean, callback: () -> Unit) {
+private fun PlayButton(
+    duration: String,
+    isPlaying: Boolean,
+    isLoading: Boolean,
+    callback: () -> Unit
+) {
+    Log.d("ddw", "isLoading: $isLoading")
     val buttonColor = MaterialTheme.colors.Primary07
     val roundedCornerShape = RoundedCornerShape(50)
     Card(
@@ -390,23 +395,37 @@ fun PlayButton(duration: String, isPlaying: Boolean, callback: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(start = 12.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
         ) {
-
-            Icon(
-                imageVector = if (isPlaying) {
-                    Icons.Outlined.Close
-                } else {
-                    Icons.Outlined.PlayArrow
-                },
-                contentDescription = "toggle-play-or-pause",
-                tint = buttonColor
-            )
-            Text(
-                text = DurationParser.parse(duration),
-                style = MaterialTheme.typography.caption.copy(
-                    color = MaterialTheme.colors.onBackground,
-                    fontWeight = FontWeight.Bold
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+//                        .padding(start = 8.dp)
+                        .width(20.dp)
+                        .height(20.dp),
+                    color = MaterialTheme.colors.primary,
+                    strokeWidth = 2.dp
                 )
-            )
+            } else if (isPlaying) {
+                Text(
+                    text = "pause",
+                    style = MaterialTheme.typography.caption.copy(
+                        color = MaterialTheme.colors.onBackground,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Outlined.PlayArrow,
+                    contentDescription = "play button",
+                    tint = buttonColor
+                )
+                Text(
+                    text = DurationParser.parse(duration),
+                    style = MaterialTheme.typography.caption.copy(
+                        color = MaterialTheme.colors.onBackground,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
         }
     }
 }

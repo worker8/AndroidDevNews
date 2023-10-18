@@ -3,7 +3,8 @@ package com.worker8.androiddevnews.podcast
 import android.util.Log
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.Player
 import com.icosillion.podengine.models.Podcast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,13 +14,13 @@ import kotlinx.coroutines.withContext
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
-import kotlin.Comparator
 import kotlin.time.ExperimentalTime
 
 
 @ExperimentalMaterialApi
 class PodcastController @Inject constructor() {
-    @OptIn(ExperimentalCoroutinesApi::class)
+    var exoPlayer: ExoPlayer? = null
+
     @ExperimentalTime
     fun setInput(
         scope: CoroutineScope,
@@ -29,15 +30,24 @@ class PodcastController @Inject constructor() {
 //        val url = "https://feeds.simplecast.com/LpAGSLnY"
 //        val url = "https://blog.jetbrains.com/feed/"
 //        val url = "https://fragmentedpodcast.com/feed/"
-//        exoPlayer.addListener(object : Player.Listener {
-//            override fun onIsPlayingChanged(isPlaying: Boolean) {
-//                super.onIsPlayingChanged(isPlaying)
-//                viewState.isPlaying.value = isPlaying
-//            }
-//        })
-        input.isPlaying
-            .onEach { viewState.isPlaying.value = it }
-            .launchIn(scope)
+
+        input.exoPlayer.onEach {
+            exoPlayer = it
+            it.addListener(object : Player.Listener {
+                override fun onIsLoadingChanged(isLoading: Boolean) {
+                    super.onIsLoadingChanged(isLoading)
+                    Log.d("ddw", "onIsPlayingChanged.isLoading: $isLoading")
+                    viewState.isLoading.value = isLoading
+                }
+
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    super.onIsPlayingChanged(isPlaying)
+                    Log.d("ddw", "onIsPlayingChanged.isPlaying: $isPlaying")
+                    viewState.isPlaying.value = isPlaying
+                }
+            })
+        }.launchIn(scope)
+
         input.update
             .onEach {
                 Log.d("ccw", "[controller] input.update")
@@ -47,9 +57,9 @@ class PodcastController @Inject constructor() {
             .launchIn(scope)
         input.listPlayClick
             .filter {
+                // if different episode is clicked, we start the service
                 viewState.currentPlayingEpisode.value?.episode?.guid != it.episode.guid
             }
-            .onEach { viewState.currentPlayingEpisode.value = it }
             .onEach { _episodePair ->
                 val episode = _episodePair.episode
                 input.startServiceCallback(
@@ -58,18 +68,26 @@ class PodcastController @Inject constructor() {
                     episode.enclosure.url.toString(),
                     _episodePair.podcastImageUrl
                 )
+                viewState.currentPlayingEpisode.value = _episodePair
             }.launchIn(scope)
-        merge(input.controlPlayClick,
-            input.listPlayClick
-                .filter {
-                    viewState.currentPlayingEpisode.value?.episode?.guid == it.episode.guid
-                })
+        input.listPlayClick.filter {
+            // if same episode is clicked
+            viewState.currentPlayingEpisode.value?.episode?.guid == it.episode.guid
+        }
             .onEach {
-                Log.d("ddw", "Controller - control CLICK")
+                Log.d("ddw", "the same episode is clicked")
+                exoPlayer?.apply {
+                    if (isPlaying) {
+                        pause()
+                    } else if (!isLoading) {
+                        playWhenReady = true
+                    }
+                }
             }
             .launchIn(scope)
         input.listPlayClick
             .onEach {
+                Log.d("ddw", "listPlayClick - show bottom sheet")
                 viewState.bottomSheetControlIsOpen.value = ModalBottomSheetValue.Expanded
             }
             .launchIn(scope)

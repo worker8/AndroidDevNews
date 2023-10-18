@@ -29,6 +29,7 @@ class PodcastContract {
         val currentPlaying: MutableState<PodcastService.CurrentProgress?>
         val currentPlayingEpisode: MutableState<EpisodePair?>
         val isPlaying: MutableState<Boolean>
+        val isLoading: MutableState<Boolean>
         val lazyListState: LazyListState
         val bottomSheetControlIsOpen: MutableState<ModalBottomSheetValue>
     }

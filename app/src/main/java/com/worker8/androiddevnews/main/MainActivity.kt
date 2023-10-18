@@ -192,6 +192,7 @@ fun MainScreen(
         override val currentPlayingEpisode =
             remember { mutableStateOf<PodcastContract.EpisodePair?>(null) }
         override val isPlaying = remember { mutableStateOf(false) }
+        override val isLoading = remember { mutableStateOf(false) }
         override val lazyListState = rememberLazyListState()
         override val bottomSheetControlIsOpen =
             remember { mutableStateOf(ModalBottomSheetValue.Hidden) }
