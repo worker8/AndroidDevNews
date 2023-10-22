@@ -2,7 +2,6 @@ package com.worker8.androiddevnews.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -26,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,13 +33,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.worker8.androiddevnews.common.util.getActivity
+import com.worker8.androiddevnews.launchCustomTab
 import java.net.URL
+
 
 @SuppressLint("SetJavaScriptEnabled")
 fun createWebView(
     context: Context,
     linkUrl: String,
-    shouldRedirectInSamePage: Boolean,
+    backgroundColor: Color,
     onPageFinished: ((String) -> Unit)? = null
 ) =
     WebView(context).apply {
@@ -68,20 +70,16 @@ fun createWebView(
                 view: WebView?,
                 url: String?
             ): Boolean {
-                if (shouldRedirectInSamePage) {
-                    url?.let {
-                        view?.loadUrl(it)
-                    }
+                return if (url.isNullOrBlank()) {
+                    false
                 } else {
-                    if (url.isNullOrBlank()) {
-                        return false
-                    }
-                    val intent = Intent(context, WebViewActivity::class.java).apply {
-                        putExtra(WebViewActivity.UrlKey, url)
-                    }
-                    context.startActivity(intent)
+                    launchCustomTab(
+                        context = context,
+                        url = url,
+                        backgroundColor = backgroundColor
+                    )
+                    true
                 }
-                return true
             }
         }
         loadUrl(linkUrl)
@@ -137,10 +135,15 @@ fun WebViewScreen(linkUrl: String) {
             }
         }
         Surface(color = MaterialTheme.colors.background) {
+            val backgroundColor = MaterialTheme.colors.background
             AndroidView(factory = { context ->
-                createWebView(context, linkUrl, true, onPageFinished = {
-                    pageTitle.value = it
-                })
+                createWebView(
+                    context = context,
+                    linkUrl = linkUrl,
+                    backgroundColor = backgroundColor,
+                    onPageFinished = {
+                        pageTitle.value = it
+                    })
             })
         }
     }

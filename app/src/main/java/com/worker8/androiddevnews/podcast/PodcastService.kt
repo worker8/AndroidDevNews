@@ -273,7 +273,7 @@ class PodcastService : Service() {
     }
 
     override fun onRebind(intent: Intent?) {
-        Log.d("ccw", "REBINDed-----")
+        Log.d("ccw", "onRebind(intent)")
         super.onRebind(intent)
         scope.launch {
             bindedFlow.emit(Unit)
@@ -281,7 +281,7 @@ class PodcastService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? {
-        Log.d("ccw", "onBinded!!")
+        Log.d("ccw", "onBind(intent)")
         scope.launch {
             bindedFlow.emit(Unit)
         }

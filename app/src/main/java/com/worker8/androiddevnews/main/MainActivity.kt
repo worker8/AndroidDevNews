@@ -41,6 +41,7 @@ import com.kirkbushman.araw.models.Submission
 import com.worker8.androiddevnews.R
 import com.worker8.androiddevnews.common.compose.theme.AndroidDevNewsTheme
 import com.worker8.androiddevnews.common.compose.theme.BottomNavBg
+import com.worker8.androiddevnews.launchCustomTab
 import com.worker8.androiddevnews.newsletter.NewsletterScreen
 import com.worker8.androiddevnews.podcast.PodcastContract
 import com.worker8.androiddevnews.podcast.PodcastController
@@ -49,10 +50,7 @@ import com.worker8.androiddevnews.podcast.PodcastService
 import com.worker8.androiddevnews.podcast.PodcastServiceAction
 import com.worker8.androiddevnews.reddit.RedditController
 import com.worker8.androiddevnews.reddit.RedditScreen
-import com.worker8.androiddevnews.ui.WebViewActivity
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -62,6 +60,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
 
 @ExperimentalTime
@@ -205,16 +205,18 @@ fun MainScreen(
             modifier = Modifier.weight(1f)
         ) {
             composable(BottomNavRoute.REDDIT.toString()) {
+                val backgroundColor = MaterialTheme.colors.background
                 RedditScreen(
                     navController,
                     redditController,
                     redditState,
                     redditListState
                 ) { url ->
-                    val intent = Intent(context, WebViewActivity::class.java).apply {
-                        putExtra(WebViewActivity.UrlKey, url)
-                    }
-                    context.startActivity(intent)
+                    launchCustomTab(
+                        context = context,
+                        url = url,
+                        backgroundColor = backgroundColor
+                    )
                 }
             }
 

@@ -99,6 +99,9 @@ dependencies {
     /* exoplayer - for podcast */
     implementation(libs.bundles.exoplayer)
 
+    /* browser - for chrome custom tabs */
+    implementation(libs.androidx.browser)
+
     /* for notification compat */
     implementation(libs.androidx.media)
 //    implementation("com.google.android.exoplayer:extension-mediasession:${version("exoplayer")}")

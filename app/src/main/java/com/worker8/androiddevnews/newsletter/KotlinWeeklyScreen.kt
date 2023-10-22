@@ -1,18 +1,19 @@
 package com.worker8.androiddevnews.newsletter
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import com.prof.rssparser.Channel
 import com.prof.rssparser.Parser
 import com.worker8.androiddevnews.ui.createWebView
 import java.nio.charset.Charset
@@ -27,10 +28,14 @@ fun KotlinWeeklyScreen() {
         .cacheExpirationMillis(24L * 60L * 60L * 100L) // one day
         .build()
     val latestIssueLink = remember { mutableStateOf<String?>(null) }
-
     if (latestIssueLink.value != null) {
+        val backgroundColor = MaterialTheme.colors.background
         AndroidView(factory = { context ->
-            createWebView(context, latestIssueLink.value!!, false)
+            createWebView(
+                context = context,
+                linkUrl = latestIssueLink.value!!,
+                backgroundColor = backgroundColor
+            )
         })
     } else {
         Column(

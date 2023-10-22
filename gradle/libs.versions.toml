@@ -12,6 +12,7 @@ araw = "f0171e78e4"
 rssProf18 = "4.0.2"
 rssPodcastFeed = "2.4.1"
 coil = "2.2.2"
+browser = "1.5.0"
 hiltDagger = "2.44"
 exoplayer = "2.18.1"
 media = "1.6.0"
@@ -38,6 +39,7 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appCompat" }
 androidx-media = { group = "androidx.media", name = "media", version.ref = "media" }
 android-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 araw = { group = "com.github.KirkBushman", name = "ARAW", version.ref = "araw" }
 rssProf18 = { group = "com.prof18.rssparser", name = "rssparser", version.ref = "rssProf18" }
 rssPodcastFeed = { group = "com.icosillion.podengine", name = "podengine", version.ref = "rssPodcastFeed" }
