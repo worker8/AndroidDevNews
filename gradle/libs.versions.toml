@@ -20,7 +20,7 @@ junit = "4.13.2"
 junitExt = "1.1.3"
 espresso = "3.4.0"
 kotlinGradlePlugin = "1.7.10"
-androidGradlePlugin = "7.3.0"
+androidGradlePlugin = "8.1.2"
 
 [libraries]
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }

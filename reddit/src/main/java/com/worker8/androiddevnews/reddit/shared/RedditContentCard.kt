@@ -30,6 +30,7 @@ import androidx.core.text.HtmlCompat
 import coil.compose.AsyncImage
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.utils.createdDate
+import com.worker8.androiddevnews.common.compose.HtmlView
 import com.worker8.androiddevnews.common.compose.theme.Neutral01
 import com.worker8.androiddevnews.common.compose.theme.Neutral06
 import com.worker8.androiddevnews.common.compose.theme.Neutral10
@@ -39,7 +40,6 @@ import com.worker8.androiddevnews.reddit.R
 import com.worker8.androiddevnews.reddit.RenderFlair
 import com.worker8.androiddevnews.reddit.isImageUrl
 import com.worker8.androiddevnews.reddit.upvoteRatioPercentage
-import com.worker8.androiddevnews.ui.HtmlView
 
 @Composable
 fun RedditContentCard(

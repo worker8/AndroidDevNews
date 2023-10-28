@@ -196,15 +196,19 @@ class PodcastService : Service() {
                 )
                 initAction?.onClick(exoPlayer, this@PodcastService)
             }
+
             PodcastServiceAction.Forward.name -> {
                 forwardAction.onClick(exoPlayer, this@PodcastService)
             }
+
             PodcastServiceAction.Rewind.name -> {
                 rewindAction.onClick(exoPlayer, this@PodcastService)
             }
+
             PodcastServiceAction.PlayPause.name -> {
                 playPauseAction.onClick(exoPlayer, this@PodcastService)
             }
+
             PodcastServiceAction.Close.name -> {
                 closeAction.onClick(exoPlayer, this@PodcastService)
             }
@@ -212,7 +216,12 @@ class PodcastService : Service() {
         val pendingIntent =
             //TODO - deeplink into podcast
             Intent(applicationContext, MainActivity::class.java).let { notificationIntent ->
-                PendingIntent.getActivity(applicationContext, 0, notificationIntent, PendingIntent.FLAG_MUTABLE)
+                PendingIntent.getActivity(
+                    applicationContext,
+                    0,
+                    notificationIntent,
+                    PendingIntent.FLAG_MUTABLE
+                )
             }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -248,7 +257,7 @@ class PodcastService : Service() {
                 .addAction(closeAction.buildNotificationAction(this, exoPlayer.isPlaying))
                 .setContentTitle(initAction?.title)
                 .setContentText(initAction?.description)
-                .setSmallIcon(R.drawable.exo_icon_circular_play)
+                .setSmallIcon(com.google.android.exoplayer2.ui.R.drawable.exo_icon_circular_play)
                 .setContentIntent(pendingIntent)
                 .setTicker(initAction?.title)
                 .setOnlyAlertOnce(true)

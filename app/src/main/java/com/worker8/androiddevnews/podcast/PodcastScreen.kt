@@ -64,6 +64,7 @@ import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImage
 import com.google.android.exoplayer2.ui.PlayerView
+import com.worker8.androiddevnews.common.compose.HtmlView
 import com.worker8.androiddevnews.common.compose.theme.Neutral01
 import com.worker8.androiddevnews.common.compose.theme.Neutral02
 import com.worker8.androiddevnews.common.compose.theme.Neutral09
@@ -71,7 +72,6 @@ import com.worker8.androiddevnews.common.compose.theme.Neutral10
 import com.worker8.androiddevnews.common.compose.theme.Primary07
 import com.worker8.androiddevnews.common.util.DurationParser
 import com.worker8.androiddevnews.common.util.toRelativeTimeString
-import com.worker8.androiddevnews.ui.HtmlView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime

@@ -36,11 +36,11 @@ import com.kirkbushman.araw.models.MoreComments
 import com.kirkbushman.araw.models.Submission
 import com.kirkbushman.araw.models.base.CommentData
 import com.kirkbushman.araw.utils.createdDate
+import com.worker8.androiddevnews.common.compose.HtmlView
 import com.worker8.androiddevnews.common.compose.theme.Neutral02
 import com.worker8.androiddevnews.common.compose.theme.Primary01
 import com.worker8.androiddevnews.common.util.toRelativeTimeString
 import com.worker8.androiddevnews.reddit.shared.RedditContentCard
-import com.worker8.androiddevnews.ui.HtmlView
 import kotlinx.coroutines.cancel
 
 private const val ColorBarWidth = 3

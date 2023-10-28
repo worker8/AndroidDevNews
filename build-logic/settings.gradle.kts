@@ -30,4 +30,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "build-logic"
 include(":convention")
-enableFeaturePreview("VERSION_CATALOGS")

@@ -53,7 +53,7 @@ sealed interface PodcastServiceAction {
             isPlaying: Boolean
         ): NotificationCompat.Action {
             return NotificationCompat.Action.Builder(
-                R.drawable.exo_icon_fastforward,
+                com.google.android.exoplayer2.R.drawable.exo_icon_fastforward,
                 name,
                 context.makeServiceIntent(name)
             ).build()
@@ -74,7 +74,7 @@ sealed interface PodcastServiceAction {
             isPlaying: Boolean
         ): NotificationCompat.Action? {
             return NotificationCompat.Action.Builder(
-                R.drawable.exo_icon_rewind,
+                com.google.android.exoplayer2.R.drawable.exo_icon_rewind,
                 name,
                 context.makeServiceIntent(name)
             ).build()
@@ -96,9 +96,9 @@ sealed interface PodcastServiceAction {
         ): NotificationCompat.Action? {
             return NotificationCompat.Action.Builder(
                 if (isPlaying) {
-                    R.drawable.exo_icon_pause
+                    com.google.android.exoplayer2.R.drawable.exo_icon_pause
                 } else {
-                    R.drawable.exo_icon_play
+                    com.google.android.exoplayer2.R.drawable.exo_icon_play
                 },
                 name,
                 context.makeServiceIntent(name)
@@ -128,7 +128,7 @@ sealed interface PodcastServiceAction {
             isPlaying: Boolean
         ): NotificationCompat.Action? {
             return NotificationCompat.Action.Builder(
-                R.drawable.exo_icon_stop,
+                com.google.android.exoplayer2.R.drawable.exo_icon_stop,
                 name,
                 context.makeServiceIntent(name)
             ).build()

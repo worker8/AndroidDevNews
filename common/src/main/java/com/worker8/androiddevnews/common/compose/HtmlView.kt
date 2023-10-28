@@ -1,4 +1,4 @@
-package com.worker8.androiddevnews.ui
+package com.worker8.androiddevnews.common.compose
 
 import android.text.SpannableStringBuilder
 import android.text.Spanned
