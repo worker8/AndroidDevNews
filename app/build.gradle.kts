@@ -10,7 +10,6 @@ plugins {
 android {
     namespace = "com.worker8.androiddevnews"
     compileSdk = 34
-    buildToolsVersion = "30.0.3"
     buildFeatures {
         buildConfig = true
     }
@@ -64,13 +63,13 @@ android {
     kotlinOptions {
         jvmTarget = "17"
         freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
-        freeCompilerArgs += "-Xjvm-default=compatibility"
+        freeCompilerArgs += "-Xjvm-default=all-compatibility"
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.get()
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 }
 // Allow references to generated code

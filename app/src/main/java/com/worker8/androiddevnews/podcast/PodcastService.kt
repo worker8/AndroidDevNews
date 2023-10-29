@@ -41,6 +41,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 
 @ExperimentalTime
@@ -156,7 +158,7 @@ class PodcastService : Service() {
             }
             .flowOn(Dispatchers.Main)
             .launchIn(scope)
-        tickerFlow(Duration.seconds(1))
+        tickerFlow(1.toDuration(DurationUnit.SECONDS))
             .filter { exoPlayer.isPlaying }
             .flowOn(Dispatchers.Main)
             .onEach {

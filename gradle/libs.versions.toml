@@ -1,32 +1,34 @@
 [versions]
-compose = "1.3.1"
-composeBom = "2022.11.00"
-composeActivity = "1.7.0-alpha01"
-composeNavigation = "2.6.0-alpha02"
-composeConstraintLayout = "1.1.0-alpha04"
+composeBom = "2023.10.01"
+# https://developer.android.com/jetpack/compose/bom#why_isnt_the_compose_compiler_library_included_in_the_bom
+# https://developer.android.com/jetpack/androidx/releases/compose-kotlin#pre-release_kotlin_compatibility
+composeCompiler = "1.5.3"
+composeActivity = "1.8.0"
+composeNavigation = "2.7.4"
+composeConstraintLayout = "1.1.0-alpha13"
 androidxLifecycle = "2.6.0-alpha02"
 androidxCoreKtx = "1.9.0"
 appCompat = "1.7.0-alpha01"
-material = "1.8.0-alpha01"
+material = "1.11.0-beta01"
 araw = "f0171e78e4"
 rssProf18 = "4.0.2"
 rssPodcastFeed = "2.4.1"
 coil = "2.2.2"
 browser = "1.5.0"
-hiltDagger = "2.44"
+hiltDagger = "2.48.1"
 exoplayer = "2.18.1"
 media = "1.6.0"
 junit = "4.13.2"
 junitExt = "1.1.3"
 espresso = "3.4.0"
-kotlinGradlePlugin = "1.7.10"
+kotlinGradlePlugin = "1.9.10"
 androidGradlePlugin = "8.1.2"
 
 [libraries]
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose" }
-androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose" }
-androidx-compose-material = { group = "androidx.compose.material", name = "material", version.ref = "compose" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-compose-material = { module = "androidx.compose.material:material" }
 androidx-compose-activity = { group = "androidx.activity", name = "activity-compose", version.ref = "composeActivity" }
 androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" }
 androidx-compose-constraintLayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "composeConstraintLayout" }
@@ -52,7 +54,7 @@ exoplayer-core = { group = "com.google.android.exoplayer", name = "exoplayer-cor
 test-junit = { group = "junit", name = "junit", version.ref = "junit" }
 test-junit-ext = { group = "androidx.test.ext", name = "junit", version.ref = "junitExt" }
 test-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
-test-compose-ui = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose" }
+test-compose-ui = { module = "androidx.compose.ui:ui-test-junit4" }
 
 # classpath
 classpath-dagger-hilt-gradlePlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hiltDagger" }
