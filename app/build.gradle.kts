@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.worker8.androiddevnews"
-    compileSdk = 33
+    compileSdk = 34
     buildToolsVersion = "30.0.3"
     buildFeatures {
         buildConfig = true
